@@ -66,13 +66,23 @@ public class CodeCoverage {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
+        StringBuffer unvisited = new StringBuffer();
+        int branchesVisited = 0;
+        boolean allBranchesVisited = true;
         for (int i = 0; i < data.length; i++) {
             if (branches[i]) {
+                branchesVisited++;
                 sb.append("Branch " + i + " reached with data: " + data[i] + "\n");
             } else {
+                allBranchesVisited = false;
+                unvisited.append(i + ", ");
                 sb.append("Branch " + i + " was not reached.\n");
             }
         }
+        double coverage = branchesVisited/data.length;
+        sb.append("==================================\nTotal branch coverage for " + methodName + ": "
+                + 100*coverage + "%\n" + (allBranchesVisited ? "" : "Unreached branches: " + unvisited.toString() + "\n")
+                + "==================================");
         return sb.toString();
     }
 
