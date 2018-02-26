@@ -56,8 +56,7 @@ public class AnimationUtils {
     public static void animateView(final View view, Type animationType, boolean enterOrExit, long duration, long delay, Runnable execOnEnd, CodeCoverage... codeCoverage) {
         CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("animateView");
         String data = "view: " + view + ", animationType: " + animationType + ", enterOrExit: " + enterOrExit + ", duration: " + duration + ", delay: " + delay + ", execOnEnd: " + execOnEnd;
-        cc.visitBranch((DEBUG ? 0 : 1), data);
-        if (DEBUG) { 
+        if (DEBUG) {
             String id;
             try {
                 id = view.getResources().getResourceEntryName(view.getId());
@@ -72,32 +71,30 @@ public class AnimationUtils {
 
 
         if (view.getVisibility() == View.VISIBLE) {
-            cc.visitBranch(2, data);
+            cc.visitBranch(0, data);
         } else if (view.getVisibility() == View.GONE) {
-            cc.visitBranch(8, data);
+            cc.visitBranch(4, data);
         } else if (view.getVisibility() == View.INVISIBLE) {
-            cc.visitBranch(9, data);
+            cc.visitBranch(5, data);
         }
 
-        if (view.getVisibility() == View.VISIBLE && enterOrExit) {
-            cc.visitBranch(3, data);
-            cc.visitBranch((DEBUG ? 4 : 5), data);
+        if (view.getVisibility() == View.VISIBLE && enterOrExit) { // 0 && 1
+            cc.visitBranch(1, data);
             if (DEBUG) Log.d(TAG, "animateView() view was already visible > view = [" + view + "]");
             view.animate().setListener(null).cancel();
             view.setVisibility(View.VISIBLE);
             view.setAlpha(1f);
-            cc.visitBranch((execOnEnd != null ? 6 : 7), data);
-            if (execOnEnd != null) execOnEnd.run();
+            cc.visitBranch((execOnEnd != null ? 2 : 3), data);
+            if (execOnEnd != null) execOnEnd.run(); //2 or 3
             return;
-        } else if ((view.getVisibility() == View.GONE || view.getVisibility() == View.INVISIBLE) && !enterOrExit) {
-            cc.visitBranch(11, data);
-            cc.visitBranch((DEBUG ? 11 : 12), data);
+        } else if ((view.getVisibility() == View.GONE || view.getVisibility() == View.INVISIBLE) && !enterOrExit) { //(4 || 5) && 6
+            cc.visitBranch(6, data);
             if (DEBUG) Log.d(TAG, "animateView() view was already gone > view = [" + view + "]");
             view.animate().setListener(null).cancel();
             view.setVisibility(View.GONE);
             view.setAlpha(0f);
-            cc.visitBranch((execOnEnd != null ? 13 : 14), data);
-            if (execOnEnd != null) execOnEnd.run();
+            cc.visitBranch((execOnEnd != null ? 7 : 8), data);
+            if (execOnEnd != null) execOnEnd.run(); // 7 or 8
             return;
         }
 
@@ -105,24 +102,24 @@ public class AnimationUtils {
         view.setVisibility(View.VISIBLE);
 
         switch (animationType) {
-            case ALPHA:
-                cc.visitBranch(15, data);
+            case ALPHA: //9
+                cc.visitBranch(9, data);
                 animateAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
-            case SCALE_AND_ALPHA:
-                cc.visitBranch(16, data);
+            case SCALE_AND_ALPHA: //10
+                cc.visitBranch(10, data);
                 animateScaleAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
-            case LIGHT_SCALE_AND_ALPHA:
-                cc.visitBranch(17, data);
+            case LIGHT_SCALE_AND_ALPHA: //11
+                cc.visitBranch(11, data);
                 animateLightScaleAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
-            case SLIDE_AND_ALPHA:
-                cc.visitBranch(18, data);
+            case SLIDE_AND_ALPHA: //12
+                cc.visitBranch(12, data);
                 animateSlideAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
-            case LIGHT_SLIDE_AND_ALPHA:
-                cc.visitBranch(19, data);
+            case LIGHT_SLIDE_AND_ALPHA: //13
+                cc.visitBranch(13, data);
                 animateLightSlideAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
         }

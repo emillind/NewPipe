@@ -1,7 +1,11 @@
 package Assignment4;
 
 import org.junit.Test;
+import org.schabi.newpipe.fragments.local.dialog.PlaylistDialog;
 import org.schabi.newpipe.util.AnimationUtils;
+import org.schabi.newpipe.util.StateSaver;
+import static org.junit.Assert.*;
+
 
 /**
  * Created by emillindblom on 2018-02-25.
@@ -27,6 +31,17 @@ public class GroupedTests {
         CodeCoverage cc = new CodeCoverage(methodName);
 
 
+
+        System.out.println(cc.toString());
+    }
+
+    @Test
+    public void tryToSaveTest() throws Exception {
+        String methodName = "tryToSave";
+        System.out.println("Calculating branch coverage for " + methodName);
+        CodeCoverage cc = new CodeCoverage(methodName);
+
+        StateSaver.WriteRead pld = new PlaylistDialog() {};
 
         System.out.println(cc.toString());
     }
