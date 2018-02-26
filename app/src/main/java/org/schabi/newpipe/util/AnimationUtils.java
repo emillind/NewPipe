@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import Assignment4.CodeCoverage;
 import org.schabi.newpipe.MainActivity;
 
 public class AnimationUtils {
@@ -52,8 +53,11 @@ public class AnimationUtils {
      * @param delay         how long the animation will wait to start, in milliseconds
      * @param execOnEnd     runnable that will be executed when the animation ends
      */
-    public static void animateView(final View view, Type animationType, boolean enterOrExit, long duration, long delay, Runnable execOnEnd) {
-        if (DEBUG) {
+    public static void animateView(final View view, Type animationType, boolean enterOrExit, long duration, long delay, Runnable execOnEnd, CodeCoverage... codeCoverage) {
+        CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("animateView");
+        String data = "view: " + view + ", animationType: " + animationType + ", enterOrExit: " + enterOrExit + ", duration: " + duration + ", delay: " + delay + ", execOnEnd: " + execOnEnd;
+        cc.visitBranch((DEBUG ? 0 : 1), data);
+        if (DEBUG) { 
             String id;
             try {
                 id = view.getResources().getResourceEntryName(view.getId());
@@ -66,18 +70,33 @@ public class AnimationUtils {
             Log.d(TAG, "animateView()" + msg);
         }
 
+
+        if (view.getVisibility() == View.VISIBLE) {
+            cc.visitBranch(2, data);
+        } else if (view.getVisibility() == View.GONE) {
+            cc.visitBranch(8, data);
+        } else if (view.getVisibility() == View.INVISIBLE) {
+            cc.visitBranch(9, data);
+        }
+
         if (view.getVisibility() == View.VISIBLE && enterOrExit) {
+            cc.visitBranch(3, data);
+            cc.visitBranch((DEBUG ? 4 : 5), data);
             if (DEBUG) Log.d(TAG, "animateView() view was already visible > view = [" + view + "]");
             view.animate().setListener(null).cancel();
             view.setVisibility(View.VISIBLE);
             view.setAlpha(1f);
+            cc.visitBranch((execOnEnd != null ? 6 : 7), data);
             if (execOnEnd != null) execOnEnd.run();
             return;
         } else if ((view.getVisibility() == View.GONE || view.getVisibility() == View.INVISIBLE) && !enterOrExit) {
+            cc.visitBranch(11, data);
+            cc.visitBranch((DEBUG ? 11 : 12), data);
             if (DEBUG) Log.d(TAG, "animateView() view was already gone > view = [" + view + "]");
             view.animate().setListener(null).cancel();
             view.setVisibility(View.GONE);
             view.setAlpha(0f);
+            cc.visitBranch((execOnEnd != null ? 13 : 14), data);
             if (execOnEnd != null) execOnEnd.run();
             return;
         }
@@ -87,18 +106,23 @@ public class AnimationUtils {
 
         switch (animationType) {
             case ALPHA:
+                cc.visitBranch(15, data);
                 animateAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
             case SCALE_AND_ALPHA:
+                cc.visitBranch(16, data);
                 animateScaleAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
             case LIGHT_SCALE_AND_ALPHA:
+                cc.visitBranch(17, data);
                 animateLightScaleAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
             case SLIDE_AND_ALPHA:
+                cc.visitBranch(18, data);
                 animateSlideAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
             case LIGHT_SLIDE_AND_ALPHA:
+                cc.visitBranch(19, data);
                 animateLightSlideAndAlpha(view, enterOrExit, duration, delay, execOnEnd);
                 break;
         }

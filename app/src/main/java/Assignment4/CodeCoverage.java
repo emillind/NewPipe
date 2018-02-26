@@ -10,7 +10,7 @@ public class CodeCoverage {
     private String methodName;
     private String[] data;
 
-    CodeCoverage(String methodName) {
+    public CodeCoverage(String methodName) {
         this.methodName = methodName;
         int branchCount = getBranchCount(methodName);
         this.branches = new boolean[branchCount];
@@ -35,7 +35,7 @@ public class CodeCoverage {
             case "onScroll":
                 return 0;
             case "animateView":
-                return 0;
+                return 20;
             case "tryToSave":
                 return 0;
             case "getResultHandler":
