@@ -31,7 +31,7 @@ public class CodeCoverage {
             case "initSuggestionObserver":
                 return 0;
             case "onPlayQueueChanged":
-                return 0;
+                return 25;
             case "onScroll":
                 return 0;
             case "animateView":
