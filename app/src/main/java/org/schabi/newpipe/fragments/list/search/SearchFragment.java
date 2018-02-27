@@ -70,6 +70,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.schabi.newpipe.util.AnimationUtils.animateView;
+import Assignment4.CodeCoverage;
 
 public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor.NextItemsResult> implements BackPressable {
 
@@ -399,6 +400,7 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             public void onClick(View v) {
                 if (DEBUG) Log.d(TAG, "onClick() called with: v = [" + v + "]");
                 if (TextUtils.isEmpty(searchEditText.getText())) {
+                    //1
                     NavigationHelper.gotoMainFragment(getFragmentManager());
                     return;
                 }
@@ -416,6 +418,7 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             public void onClick(View v) {
                 if (DEBUG) Log.d(TAG, "onClick() called with: v = [" + v + "]");
                 if (isSuggestionsEnabled && errorPanelRoot.getVisibility() != View.VISIBLE) {
+                    //2 && 3
                     showSuggestionsPanel();
                 }
             }
@@ -426,6 +429,7 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             public void onFocusChange(View v, boolean hasFocus) {
                 if (DEBUG) Log.d(TAG, "onFocusChange() called with: v = [" + v + "], hasFocus = [" + hasFocus + "]");
                 if (isSuggestionsEnabled && hasFocus && errorPanelRoot.getVisibility() != View.VISIBLE) {
+                    //2 && 4 && 3
                     showSuggestionsPanel();
                 }
             }
@@ -447,9 +451,11 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             @Override
             public void onSuggestionItemLongClick(SuggestionItem item) {
                 if (item.fromHistory) showDeleteSuggestionDialog(item);
+                //5
             }
         });
 
+        //6, 7
         if (textWatcher != null) searchEditText.removeTextChangedListener(textWatcher);
         textWatcher = new TextWatcher() {
             @Override
@@ -473,6 +479,7 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                 if (DEBUG) {
                     Log.d(TAG, "onEditorAction() called with: v = [" + v + "], actionId = [" + actionId + "], event = [" + event + "]");
                 }
+                //8 && 9 || 10
                 if (event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getAction() == EditorInfo.IME_ACTION_SEARCH)) {
                     search(searchEditText.getText().toString());
                     return true;
@@ -481,6 +488,7 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             }
         });
 
+        //11 || 12
         if (suggestionDisposable == null || suggestionDisposable.isDisposed()) initSuggestionObserver();
     }
 
@@ -563,8 +571,16 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
     }
 
     private void initSuggestionObserver() {
+        CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("initSuggestionObserver");
+        String data = ;
+
+
         if (DEBUG) Log.d(TAG, "initSuggestionObserver() called");
-        if (suggestionDisposable != null) suggestionDisposable.dispose();
+
+        //0
+        if (suggestionDisposable != null){
+            suggestionDisposable.dispose();
+        }
 
         final Observable<String> observable = suggestionPublisher
                 .debounce(SUGGESTIONS_DEBOUNCE, TimeUnit.MILLISECONDS)
@@ -579,10 +595,13 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                             .map(searchHistoryEntries -> {
                                 List<SuggestionItem> result = new ArrayList<>();
                                 for (SearchHistoryEntry entry : searchHistoryEntries)
+                                    //1
                                     result.add(new SuggestionItem(true, entry.getSearch()));
+                                //2
                                 return result;
                             });
-
+                    
+                    //3
                     if (query.length() < THRESHOLD_NETWORK_SUGGESTION) {
                         // Only pass through if the query length is equal or greater than THRESHOLD_NETWORK_SUGGESTION
                         return local.materialize();
@@ -594,27 +613,36 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                             .map(strings -> {
                                 List<SuggestionItem> result = new ArrayList<>();
                                 for (String entry : strings) {
+                                    //4
                                     result.add(new SuggestionItem(false, entry));
                                 }
+                                //5
                                 return result;
                             });
 
                     return Observable.zip(local, network, (localResult, networkResult) -> {
                         List<SuggestionItem> result = new ArrayList<>();
+
+                        //6
                         if (localResult.size() > 0) result.addAll(localResult);
 
                         // Remove duplicates
                         final Iterator<SuggestionItem> iterator = networkResult.iterator();
                         while (iterator.hasNext() && localResult.size() > 0) {
+                            //7 && 8
                             final SuggestionItem next = iterator.next();
                             for (SuggestionItem item : localResult) {
+                                //9
                                 if (item.query.equals(next.query)) {
+                                    //10
                                     iterator.remove();
                                     break;
                                 }
+                            //11
                             }
                         }
 
+                        //12
                         if (networkResult.size() > 0) result.addAll(networkResult);
                         return result;
                     }).materialize();
@@ -622,14 +650,19 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listNotification -> {
+  
+                    //13
                     if (listNotification.isOnNext()) {
                         handleSuggestions(listNotification.getValue());
-                    } else if (listNotification.isOnError()) {
+
+                    } else if (listNotification.isOnError()) {//14
                         Throwable error = listNotification.getError();
+
                         if (!ExtractorHelper.hasAssignableCauseThrowable(error,
                                 IOException.class, SocketException.class,
                                 InterruptedException.class, InterruptedIOException.class)) {
                             onSuggestionError(error);
+                            //15
                         }
                     }
                 });
