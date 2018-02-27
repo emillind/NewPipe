@@ -69,6 +69,8 @@ import org.schabi.newpipe.util.ThemeHelper;
 
 import java.util.List;
 
+import Assignment4.CodeCoverage;
+
 import static org.schabi.newpipe.util.AnimationUtils.animateView;
 
 /**
@@ -808,7 +810,7 @@ public final class MainVideoPlayer extends Activity {
         }
     }
 
-    private class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener {
+    public class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener {
         private boolean isMoving;
 
         @Override
@@ -855,9 +857,19 @@ public final class MainVideoPlayer extends Activity {
         private int eventsNum;
 
         // TODO: Improve video gesture controls
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (!isPlayerGestureEnabled) return false;
+        // @Override - Kind of had to remove this...
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY, CodeCoverage... codeCoverage) {
+
+            CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("animateView");
+            String data = "el: " + e1 + ", e2: " + e2 + ", distanceX: " + distanceX + ", distanceY: " + distanceY;
+
+            if (!isPlayerGestureEnabled){
+                cc.visitBranch(0, data);
+                return false;
+            }
+            // Else
+            cc.visitBranch(1, data);
+
 
             //noinspection PointlessBooleanExpression
             if (DEBUG && false) Log.d(TAG, "MainVideoPlayer.onScroll = " +
@@ -866,21 +878,39 @@ public final class MainVideoPlayer extends Activity {
                     ", distanceXy = [" + distanceX + ", " + distanceY + "]");
             float abs = Math.abs(e2.getY() - e1.getY());
             if (!triggered) {
+                cc.visitBranch(2, data);
                 triggered = abs > MOVEMENT_THRESHOLD;
                 return false;
             }
+            //Else
+            cc.visitBranch(3, data);
 
-            if (eventsNum++ % eventsThreshold != 0 || playerImpl.getCurrentState() == BasePlayer.STATE_COMPLETED) return false;
+            if (eventsNum++ % eventsThreshold != 0 || playerImpl.getCurrentState() == BasePlayer.STATE_COMPLETED) {
+                cc.visitBranch(4, data);
+                return false;
+            }
+            //Else
+            cc.visitBranch(5, data);
             isMoving = true;
 //            boolean up = !((e2.getY() - e1.getY()) > 0) && distanceY > 0; // Android's origin point is on top
             boolean up = distanceY > 0;
 
 
             if (e1.getX() > playerImpl.getRootView().getWidth() / 2) {
+                cc.visitBranch(6, data);
                 double floor = Math.floor(up ? stepVolume : -stepVolume);
                 currentVolume = (int) (playerImpl.getAudioReactor().getVolume() + floor);
-                if (currentVolume >= maxVolume) currentVolume = maxVolume;
-                if (currentVolume <= minVolume) currentVolume = (int) minVolume;
+                if (currentVolume >= maxVolume) {
+                    cc.visitBranch(7, data);
+                    currentVolume = maxVolume;
+                }else
+                    cc.visitBranch(8, data);
+                if (currentVolume <= minVolume) {
+                    cc.visitBranch(9, data);
+                    currentVolume = (int) minVolume;
+                }else
+                    cc.visitBranch(10, data);
+
                 playerImpl.getAudioReactor().setVolume(currentVolume);
 
                 currentVolume = playerImpl.getAudioReactor().getVolume();
@@ -888,13 +918,29 @@ public final class MainVideoPlayer extends Activity {
                 final String volumeText = volumeUnicode + " " + Math.round((((float) currentVolume) / maxVolume) * 100) + "%";
                 playerImpl.getVolumeTextView().setText(volumeText);
 
-                if (playerImpl.getVolumeTextView().getVisibility() != View.VISIBLE) animateView(playerImpl.getVolumeTextView(), true, 200);
-                if (playerImpl.getBrightnessTextView().getVisibility() == View.VISIBLE) playerImpl.getBrightnessTextView().setVisibility(View.GONE);
+                if (playerImpl.getVolumeTextView().getVisibility() != View.VISIBLE) {
+                    cc.visitBranch(11, data);
+                    animateView(playerImpl.getVolumeTextView(), true, 200);
+                }else
+                    cc.visitBranch(12, data);
+                if (playerImpl.getBrightnessTextView().getVisibility() == View.VISIBLE) {
+                    cc.visitBranch(13, data);
+                    playerImpl.getBrightnessTextView().setVisibility(View.GONE);
+                }else
+                    cc.visitBranch(14, data);
             } else {
                 WindowManager.LayoutParams lp = getWindow().getAttributes();
                 currentBrightness += up ? stepBrightness : -stepBrightness;
-                if (currentBrightness >= 1f) currentBrightness = 1f;
-                if (currentBrightness <= minBrightness) currentBrightness = minBrightness;
+                if (currentBrightness >= 1f) {
+                    cc.visitBranch(15, data);
+                    currentBrightness = 1f;
+                }else
+                    cc.visitBranch(16, data);
+                if (currentBrightness <= minBrightness) {
+                    cc.visitBranch(17, data);
+                    currentBrightness = minBrightness;
+                }else
+                    cc.visitBranch(18, data);
 
                 lp.screenBrightness = currentBrightness;
                 getWindow().setAttributes(lp);
@@ -904,9 +950,18 @@ public final class MainVideoPlayer extends Activity {
                 final String brightnessText = brightnessUnicode + " " + (brightnessNormalized == 1 ? 0 : brightnessNormalized) + "%";
                 playerImpl.getBrightnessTextView().setText(brightnessText);
 
-                if (playerImpl.getBrightnessTextView().getVisibility() != View.VISIBLE) animateView(playerImpl.getBrightnessTextView(), true, 200);
-                if (playerImpl.getVolumeTextView().getVisibility() == View.VISIBLE) playerImpl.getVolumeTextView().setVisibility(View.GONE);
+                if (playerImpl.getBrightnessTextView().getVisibility() != View.VISIBLE) {
+                    cc.visitBranch(19, data);
+                    animateView(playerImpl.getBrightnessTextView(), true, 200);
+                }else
+                    cc.visitBranch(20, data);
+                if (playerImpl.getVolumeTextView().getVisibility() == View.VISIBLE) {
+                    cc.visitBranch(21, data);
+                    playerImpl.getVolumeTextView().setVisibility(View.GONE);
+                }else
+                    cc.visitBranch(22, data);
             }
+            cc.visitBranch(23, data);
             return true;
         }
 
