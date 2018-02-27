@@ -211,30 +211,63 @@ public final class ListHelper {
      * @param ascendingOrder        true -> smallest to greatest | false -> greatest to smallest    @return the sorted list
      * @return the sorted list
      */
-    public static List<VideoStream> getSortedStreamVideosList(MediaFormat defaultFormat, boolean showHigherResolutions, List<VideoStream> videoStreams, List<VideoStream> videoOnlyStreams, boolean ascendingOrder) {
+    public static List<VideoStream> getSortedStreamVideosList(MediaFormat defaultFormat, boolean showHigherResolutions, List<VideoStream> videoStreams, List<VideoStream> videoOnlyStreams, boolean ascendingOrder, CodeCoverage... codeCoverage) {
+        CodeCoverage cc = codeCoverage.length != 0 ? codeCoverage[0] : new CodeCoverage("getSortedStreamVideosList");
+        String data = "defaultFormat: " + defaultFormat + ", showHigherResolutions: " + showHigherResolutions + ", videoStreams: " + videoStreams + ", videoOnlyStreams: " + videoOnlyStreams + ", ascendingOrder: " + ascendingOrder;
         ArrayList<VideoStream> retList = new ArrayList<>();
         HashMap<String, VideoStream> hashMap = new HashMap<>();
 
         if (videoOnlyStreams != null) {
+            cc.visitBranch(0, data);
             for (VideoStream stream : videoOnlyStreams) {
-                if (!showHigherResolutions && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) continue;
+                cc.visitBranch(1, data);
+                if (!showHigherResolutions) cc.visitBranch(2, data);
+                if (!showHigherResolutions && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) {
+                    cc.visitBranch(3, data);
+                    continue;
+                }
+                cc.visitBranch(4, data);
                 retList.add(stream);
             }
+            cc.visitBranch(5, data);
+        } else {
+            cc.visitBranch(6, data);
         }
         if (videoStreams != null) {
+            cc.visitBranch(7, data);
             for (VideoStream stream : videoStreams) {
-                if (!showHigherResolutions && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) continue;
+                cc.visitBranch(8, data);
+                if(!showHigherResolutions) cc.visitBranch(9, data);
+                if (!showHigherResolutions && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) {
+                    cc.visitBranch(10, data);
+                    continue;
+                }
+                cc.visitBranch(11, data);
                 retList.add(stream);
             }
+            cc.visitBranch(12, data);
+        } else {
+            cc.visitBranch(13, data);
         }
 
         // Add all to the hashmap
-        for (VideoStream videoStream : retList) hashMap.put(videoStream.getResolution(), videoStream);
+        for (VideoStream videoStream : retList) {
+            cc.visitBranch(14, data);
+            hashMap.put(videoStream.getResolution(), videoStream);
+        }
+        cc.visitBranch(15, data);
 
         // Override the values when the key == resolution, with the defaultFormat
         for (VideoStream videoStream : retList) {
-            if (videoStream.getFormat() == defaultFormat) hashMap.put(videoStream.getResolution(), videoStream);
+            cc.visitBranch(16, data);
+            if (videoStream.getFormat() == defaultFormat) {
+                cc.visitBranch(17, data);
+                hashMap.put(videoStream.getResolution(), videoStream);
+            } else {
+                cc.visitBranch(18, data);
+            }
         }
+        cc.visitBranch(19, data);
 
         retList.clear();
         retList.addAll(hashMap.values());
