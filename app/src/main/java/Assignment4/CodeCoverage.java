@@ -35,9 +35,9 @@ public class CodeCoverage {
             case "onScroll":
                 return 0;
             case "animateView":
-                return 0;
+                return 14;
             case "tryToSave":
-                return 0;
+                return 21;
             case "getResultHandler":
                 return 0;
             case "getHighestQualityAudioIndex":
