@@ -37,7 +37,7 @@ public class CodeCoverage {
             case "animateView":
                 return 14;
             case "tryToSave":
-                return 20;
+                return 21;
             case "getResultHandler":
                 return 0;
             case "run":

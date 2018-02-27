@@ -40,6 +40,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,10 @@ public class StateSaver {
         File externalCacheDir = context.getExternalCacheDir();
         if (externalCacheDir != null) cacheDirPath = externalCacheDir.getAbsolutePath();
         if (TextUtils.isEmpty(cacheDirPath)) cacheDirPath = context.getCacheDir().getAbsolutePath();
+    }
+
+    public static void setCacheDirPath(String cacheDirPath2) {
+        cacheDirPath = cacheDirPath2;
     }
 
     /**
@@ -227,30 +232,31 @@ public class StateSaver {
         FileOutputStream fileOutputStream = null;
         try {
             File cacheDir = new File(cacheDirPath);
-            cc.visitBranch(!cacheDir.exists() ? 3 : 4, data);
-            if (!cacheDir.exists()) throw new RuntimeException("Cache dir does not exist > " + cacheDirPath); //3 or 4
+            cc.visitBranch(!cacheDir.exists() ? 4 : 5, data);
+            if (!cacheDir.exists()) throw new RuntimeException("Cache dir does not exist > " + cacheDirPath); //4 or 5
             cacheDir = new File(cacheDir, CACHE_DIR_NAME);
-            cc.visitBranch(!cacheDir.exists() ? 5 : 8, data);
-            if (!cacheDir.exists()) { //5 or 8
-                cc.visitBranch(!cacheDir.mkdir() ? 6 : 7, data);
-                if(!cacheDir.mkdir()) { //6 or 7
+            cc.visitBranch(!cacheDir.exists() ? 6 : 9, data);
+            if (!cacheDir.exists()) { //6 or 9
+                if(!cacheDir.mkdir()) { //7 or 8
+                    cc.visitBranch(7, data);
                     if(BuildConfig.DEBUG) {
                         Log.e(TAG, "Failed to create cache directory " + cacheDir.getAbsolutePath());
                     }
                     return null;
                 }
+                cc.visitBranch(8, data);
             }
 
-            cc.visitBranch(TextUtils.isEmpty(suffixFileName) ? 9 : 10, data);
-            if (TextUtils.isEmpty(suffixFileName)) suffixFileName = ".cache"; //9 or 10
+            cc.visitBranch(TextUtils.isEmpty(suffixFileName) ? 10 : 11, data);
+            if (TextUtils.isEmpty(suffixFileName)) suffixFileName = ".cache"; //10 or 11
             File file = new File(cacheDir, prefixFileName + suffixFileName);
-            if (file.exists()) cc.visitBranch(11, data);
-            if (file.exists() && file.length() > 0) { //11 && 12
-                cc.visitBranch(12, data);
+            if (file.exists()) cc.visitBranch(12, data);
+            if (file.exists() && file.length() > 0) { //12 && 13
+                cc.visitBranch(13, data);
                 // If the file already exists, just return it
                 return new SavedState(prefixFileName, file.getAbsolutePath());
-            } else { //13
-                cc.visitBranch(13, data);
+            } else { //14
+                cc.visitBranch(14, data);
                 // Delete any file that contains the prefix
                 File[] files = cacheDir.listFiles(new FilenameFilter() {
                     @Override
@@ -258,12 +264,12 @@ public class StateSaver {
                         return name.contains(prefixFileName);
                     }
                 });
-                for (File fileToDelete : files) { //14
-                    cc.visitBranch(14, data);
+                for (File fileToDelete : files) { //15
+                    cc.visitBranch(15, data);
                     fileToDelete.delete();
                 }
-                cc.visitBranch(15,data);
-                //15
+                cc.visitBranch(16,data);
+                //16
             }
 
             fileOutputStream = new FileOutputStream(file);
@@ -271,16 +277,16 @@ public class StateSaver {
             outputStream.writeObject(savedObjects);
 
             return new SavedState(prefixFileName, file.getAbsolutePath());
-        } catch (Exception e) { //16
-            cc.visitBranch(16, data);
+        } catch (Exception e) { //17
+            cc.visitBranch(17, data);
             Log.e(TAG, "Failed to save state", e);
         } finally {
-            cc.visitBranch(fileOutputStream != null ? 17 : 19, data);
-            if (fileOutputStream != null) { //17 or 19
+            cc.visitBranch(fileOutputStream != null ? 18 : 20, data);
+            if (fileOutputStream != null) { //18 or 20
                 try {
                     fileOutputStream.close();
-                } catch (IOException ignored) { //18
-                    cc.visitBranch(18, data);
+                } catch (IOException ignored) { //19
+                    cc.visitBranch(19, data);
                 }
             }
         }
