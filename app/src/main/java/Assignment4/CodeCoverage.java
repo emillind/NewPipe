@@ -10,7 +10,7 @@ public class CodeCoverage {
     private String methodName;
     private String[] data;
 
-    CodeCoverage(String methodName) {
+    public CodeCoverage(String methodName) {
         this.methodName = methodName;
         int branchCount = getBranchCount(methodName);
         this.branches = new boolean[branchCount];
@@ -31,7 +31,7 @@ public class CodeCoverage {
             case "initSuggestionObserver":
                 return 0;
             case "onPlayQueueChanged":
-                return 0;
+                return 25;
             case "onScroll":
                 return 0;
             case "animateView":
@@ -79,7 +79,7 @@ public class CodeCoverage {
                 sb.append("Branch " + i + " was not reached.\n");
             }
         }
-        double coverage = branchesVisited/data.length;
+        double coverage = (double)branchesVisited/data.length;
         sb.append("==================================\nTotal branch coverage for " + methodName + ": "
                 + 100*coverage + "%\n" + (allBranchesVisited ? "" : "Unreached branches: " + unvisited.toString() + "\n")
                 + "==================================");

@@ -26,6 +26,8 @@ import io.reactivex.disposables.SerialDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
+import Assignment4.CodeCoverage;
+
 public class MediaSourceManager {
     private final String TAG = "MediaSourceManager@" + Integer.toHexString(hashCode());
     // One-side rolling window size for default loading
@@ -57,7 +59,7 @@ public class MediaSourceManager {
         this(listener, playQueue, 1, 400L);
     }
 
-    private MediaSourceManager(@NonNull final PlaybackListener listener,
+    public MediaSourceManager(@NonNull final PlaybackListener listener,
                                @NonNull final PlayQueue playQueue,
                                final int windowSize,
                                final long loadDebounceMillis) {
@@ -156,65 +158,104 @@ public class MediaSourceManager {
         };
     }
 
-    private void onPlayQueueChanged(final PlayQueueEvent event) {
-        if (playQueue.isEmpty() && playQueue.isComplete()) {
+    /*
+     * Requirements:
+     * - If the PlayQueue is empty and complete, the PlayBackListener should be shutdown.
+     * - If the given event is INIT, REORDER or ERROR then reset queue
+     *   If APPEND populate the sources
+      *  If REMOVE remove the Index specified by the event
+     *   If MOVE, move the index specified by the event
+     *   Else do nothing
+     * - Load differently depending on the event  (low or high frequency)
+     * - If the PlayQueue is not ready fetch it
+     * - If subscribed request the next one
+     */
+    public void onPlayQueueChanged(final PlayQueueEvent event, Assignment4.CodeCoverage... codeCoverage) {
+        CodeCoverage cc = codeCoverage.length != 0 ? codeCoverage[0] : new CodeCoverage("onPlayQueueChanged");
+        String data = "event: " + event.toString();
+
+        if(playQueue.isEmpty()) { // 0
+            cc.visitBranch(0, data);
+        }
+
+
+        if (playQueue.isEmpty() && playQueue.isComplete()) { // branch 0 && 1
+            cc.visitBranch(1, data);
             playbackListener.shutdown();
             return;
+        }
+        else { // branch 2
+            cc.visitBranch(2, data);
         }
 
         // Event specific action
         switch (event.type()) {
-            case INIT:
-            case REORDER:
-            case ERROR:
+            case INIT: cc.visitBranch(3, data);// 3
+            case REORDER: cc.visitBranch(4, data);// 4
+            case ERROR: cc.visitBranch(5, data);// 5
                 reset();
                 break;
-            case APPEND:
+            case APPEND: cc.visitBranch(6, data);// 6
                 populateSources();
                 break;
-            case REMOVE:
+            case REMOVE: cc.visitBranch(7, data);// 7
                 final RemoveEvent removeEvent = (RemoveEvent) event;
                 remove(removeEvent.getRemoveIndex());
                 break;
-            case MOVE:
+            case MOVE: cc.visitBranch(8, data); // 8
                 final MoveEvent moveEvent = (MoveEvent) event;
                 move(moveEvent.getFromIndex(), moveEvent.getToIndex());
                 break;
-            case SELECT:
-            case RECOVERY:
+            case SELECT: cc.visitBranch(9, data); // 9
+            case RECOVERY: cc.visitBranch(10, data); // 10
             default:
+                cc.visitBranch(11, data);// 11
                 break;
         }
 
         // Loading and Syncing
         switch (event.type()) {
-            case INIT:
-            case REORDER:
+            case INIT: cc.visitBranch(12, data); // 12
+            case REORDER: cc.visitBranch(13, data); // 13
             case ERROR:
+                cc.visitBranch(14, data); // 14
                 loadImmediate(); // low frequency, critical events
                 break;
-            case APPEND:
-            case REMOVE:
-            case SELECT:
-            case MOVE:
-            case RECOVERY:
+            case APPEND: cc.visitBranch(15, data); // 15
+            case REMOVE: cc.visitBranch(16, data); // 16
+            case SELECT: cc.visitBranch(17, data); // 17
+            case MOVE: cc.visitBranch(18, data); // 18
+            case RECOVERY: cc.visitBranch(19, data); // 19
             default:
+                cc.visitBranch(20, data); // 20
                 loadDebounced(); // high frequency or noncritical events
                 break;
         }
 
-        if (!isPlayQueueReady()) {
+        if (!isPlayQueueReady()) { // 21
+            cc.visitBranch(21, data);
             tryBlock();
             playQueue.fetch();
         }
-        if (playQueueReactor != null) playQueueReactor.request(1);
+
+        else { // 22
+            cc.visitBranch(22, data);
+        }
+
+        if (playQueueReactor != null) {
+            cc.visitBranch(23, data); // 23
+            playQueueReactor.request(1);
+        }
+        else { // 24
+            cc.visitBranch(24, data);
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////
     // Internal Helpers
     //////////////////////////////////////////////////////////////////////////*/
 
-    private boolean isPlayQueueReady() {
+    public boolean isPlayQueueReady() {
         return playQueue.isComplete() || playQueue.size() - playQueue.getIndex() > windowSize;
     }
 
