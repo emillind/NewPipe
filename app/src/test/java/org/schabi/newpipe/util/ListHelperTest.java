@@ -33,6 +33,7 @@ public class ListHelperTest {
             new VideoStream("", MediaFormat.WEBM,     /**/ "480p"),
             new VideoStream("", MediaFormat.v3GPP,    /**/ "144p"),
             new VideoStream("", MediaFormat.MPEG_4,   /**/ "360p"),
+            new VideoStream("", MediaFormat.MPEG_4,   /**/ "2160p"),
             new VideoStream("", MediaFormat.WEBM,     /**/ "360p"));
 
     private static final List<VideoStream> videoOnlyStreamsTestList = Arrays.asList(
@@ -48,7 +49,21 @@ public class ListHelperTest {
 
     @Test
     public void getSortedStreamVideosListTest() throws Exception {
-        List<VideoStream> result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, true, videoStreamsTestList, videoOnlyStreamsTestList, true);
+        String methodName = "getSortedStreamVideosList";
+        System.out.println("Calculating branch coverage for " + methodName);
+        CodeCoverage cc = new CodeCoverage(methodName);
+        getSortedStreamVideosListTest_highRes(cc);
+        getSortedStreamVideosListTest_noHighRes(cc);
+        getSortedStreamVideosListTest_nullLists(cc);
+        System.out.println(cc.toString());
+    }
+
+    private void getSortedStreamVideosListTest_nullLists(CodeCoverage cc) throws Exception {
+        assertEquals(0, ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, true, null, null, true, cc).size());
+    }
+
+    private void getSortedStreamVideosListTest_highRes(CodeCoverage cc) throws Exception {
+        List<VideoStream> result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, true, videoStreamsTestList, videoOnlyStreamsTestList, true, cc);
 
         List<String> expected = Arrays.asList("144p", "240p", "360p", "480p", "720p", "720p60", "1080p", "1080p60", "1440p60", "2160p", "2160p60");
         //for (VideoStream videoStream : result) System.out.println(videoStream.resolution + " > " + MediaFormat.getSuffixById(videoStream.format) + " > " + videoStream.isVideoOnly);
@@ -58,23 +73,23 @@ public class ListHelperTest {
             assertEquals(result.get(i).resolution, expected.get(i));
         }
 
+
         ////////////////////
         // Reverse Order //
         //////////////////
 
-        result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, true, videoStreamsTestList, videoOnlyStreamsTestList, false);
+        result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, true, videoStreamsTestList, videoOnlyStreamsTestList, false, cc);
         expected = Arrays.asList("2160p60", "2160p", "1440p60", "1080p60", "1080p", "720p60", "720p", "480p", "360p", "240p", "144p");
         assertEquals(result.size(), expected.size());
         for (int i = 0; i < result.size(); i++) assertEquals(result.get(i).resolution, expected.get(i));
     }
 
-    @Test
-    public void getSortedStreamVideosExceptHighResolutionsTest() throws Exception {
+    private void getSortedStreamVideosListTest_noHighRes(CodeCoverage cc) throws Exception {
         ////////////////////////////////////
         // Don't show Higher resolutions //
         //////////////////////////////////
 
-        List<VideoStream> result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, false, videoStreamsTestList, videoOnlyStreamsTestList, false);
+        List<VideoStream> result = ListHelper.getSortedStreamVideosList(MediaFormat.MPEG_4, false, videoStreamsTestList, videoOnlyStreamsTestList, false, cc);
         List<String> expected = Arrays.asList("1080p60", "1080p", "720p60", "720p", "480p", "360p", "240p", "144p");
         assertEquals(result.size(), expected.size());
         for (int i = 0; i < result.size(); i++) assertEquals(result.get(i).resolution, expected.get(i));

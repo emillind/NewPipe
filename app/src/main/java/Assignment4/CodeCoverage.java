@@ -44,6 +44,8 @@ public class CodeCoverage {
                 return 15;
             case "main":
                 return 0;
+            case "getSortedStreamVideosList":
+                return 20;
             default:
                 return -1;
         }
