@@ -1,6 +1,7 @@
 package Assignment4;
 
 import org.junit.Test;
+import org.schabi.newpipe.RouterActivity;
 
 /**
  * Created by emillindblom on 2018-02-25.
@@ -19,5 +20,15 @@ public class GroupedTests {
         //System.out.println(cc.toString());
     }
 
+    @Test
+    public void onClickTest() throws Exception {
+        String methodName = "onClick";
+        System.out.println("Calculating branch coverage for " + methodName);
+        CodeCoverage cc = new CodeCoverage(methodName);
+
+        RouterActivity.FetcherService fs = null;
+        //fs.getResultHandler();
+        System.out.println(cc.toString());
+    }
 }
 

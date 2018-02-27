@@ -57,6 +57,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import Assignment4.CodeCoverage;
+
 import static org.schabi.newpipe.util.ThemeHelper.resolveResourceIdFromAttr;
 
 /**
@@ -425,7 +427,9 @@ public class RouterActivity extends AppCompatActivity {
             }
         }
 
-        public Consumer<Info> getResultHandler(Choice choice) {
+        public Consumer<Info> getResultHandler(Choice choice, CodeCoverage... codeCoverage) {
+            CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("getResultHandler");
+             String data = "Choice: " + choice;
             return info -> {
                 final String videoPlayerKey = getString(R.string.video_player_key);
                 final String backgroundPlayerKey = getString(R.string.background_player_key);
@@ -440,39 +444,54 @@ public class RouterActivity extends AppCompatActivity {
                 String playerChoice = choice.playerChoice;
 
                 if (info instanceof StreamInfo) {
+                    cc.visitBranch(0, data);
                     if (playerChoice.equals(backgroundPlayerKey) && isExtAudioEnabled) {
+                        cc.visitBranch(1, data);
                         NavigationHelper.playOnExternalAudioPlayer(this, (StreamInfo) info);
 
                     } else if (playerChoice.equals(videoPlayerKey) && isExtVideoEnabled) {
+                        cc.visitBranch(2, data);
                         NavigationHelper.playOnExternalVideoPlayer(this, (StreamInfo) info);
 
                     } else if (playerChoice.equals(videoPlayerKey) && useOldVideoPlayer) {
+                        cc.visitBranch(3, data);
                         NavigationHelper.playOnOldVideoPlayer(this, (StreamInfo) info);
 
                     } else {
+                        cc.visitBranch(4, data);
                         playQueue = new SinglePlayQueue((StreamInfo) info);
 
                         if (playerChoice.equals(videoPlayerKey)) {
+                            cc.visitBranch(5, data);
                             NavigationHelper.playOnMainPlayer(this, playQueue);
                         } else if (playerChoice.equals(backgroundPlayerKey)) {
+                            cc.visitBranch(6, data);
                             NavigationHelper.enqueueOnBackgroundPlayer(this, playQueue, true);
                         } else if (playerChoice.equals(popupPlayerKey)) {
+                            cc.visitBranch(7, data);
                             NavigationHelper.enqueueOnPopupPlayer(this, playQueue, true);
-                        }
+                        }else
+                            cc.visitBranch(8, data);
                     }
                 }
 
                 if (info instanceof ChannelInfo || info instanceof PlaylistInfo) {
+                    cc.visitBranch(9, data);
                     playQueue = info instanceof ChannelInfo ? new ChannelPlayQueue((ChannelInfo) info) : new PlaylistPlayQueue((PlaylistInfo) info);
 
                     if (playerChoice.equals(videoPlayerKey)) {
+                        cc.visitBranch(10, data);
                         NavigationHelper.playOnMainPlayer(this, playQueue);
                     } else if (playerChoice.equals(backgroundPlayerKey)) {
+                        cc.visitBranch(11, data);
                         NavigationHelper.playOnBackgroundPlayer(this, playQueue);
                     } else if (playerChoice.equals(popupPlayerKey)) {
+                        cc.visitBranch(12, data);
                         NavigationHelper.playOnPopupPlayer(this, playQueue);
-                    }
-                }
+                    }else
+                        cc.visitBranch(13, data);
+                }else
+                    cc.visitBranch(14, data);
             };
         }
 
