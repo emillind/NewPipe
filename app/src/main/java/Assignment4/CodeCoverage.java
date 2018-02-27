@@ -37,7 +37,7 @@ public class CodeCoverage {
             case "animateView":
                 return 14;
             case "tryToSave":
-                return 19;
+                return 20;
             case "getResultHandler":
                 return 0;
             case "run":
@@ -67,7 +67,7 @@ public class CodeCoverage {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         StringBuffer unvisited = new StringBuffer();
-        int branchesVisited = 0;
+        double branchesVisited = 0;
         boolean allBranchesVisited = true;
         for (int i = 0; i < data.length; i++) {
             if (branches[i]) {

@@ -165,8 +165,9 @@ public class StateSaver {
      * @see #tryToSave(boolean, String, String, WriteRead)
      */
     @Nullable
-    public static SavedState tryToSave(boolean isChangingConfig, @Nullable SavedState savedState, Bundle outState, WriteRead writeRead) {
+    public static SavedState tryToSave(boolean isChangingConfig, @Nullable SavedState savedState, Bundle outState, WriteRead writeRead, CodeCoverage... codeCoverage) {
         @NonNull
+        CodeCoverage cc = codeCoverage.length == 1 ? codeCoverage[0] : new CodeCoverage("tryToSave");
         String currentSavedPrefix;
         if (savedState == null || TextUtils.isEmpty(savedState.getPrefixFileSaved())) {
             // Generate unique prefix
@@ -176,7 +177,7 @@ public class StateSaver {
             currentSavedPrefix = savedState.getPrefixFileSaved();
         }
 
-        savedState = tryToSave(isChangingConfig, currentSavedPrefix, writeRead.generateSuffix(), writeRead);
+        savedState = tryToSave(isChangingConfig, currentSavedPrefix, writeRead.generateSuffix(), writeRead, cc);
         if (savedState != null) {
             outState.putParcelable(StateSaver.KEY_SAVED_STATE, savedState);
             return savedState;
@@ -201,8 +202,7 @@ public class StateSaver {
      * @param writeRead
      */
     @Nullable
-    private static SavedState tryToSave(boolean isChangingConfig, final String prefixFileName, String suffixFileName, WriteRead writeRead, CodeCoverage... codeCoverage) {
-        CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("tryToSave");
+    private static SavedState tryToSave(boolean isChangingConfig, final String prefixFileName, String suffixFileName, WriteRead writeRead, CodeCoverage cc) {
         String data = "isChangingConfig: " + isChangingConfig + ", prefixFileName: " + prefixFileName + ", suffixFileName: " + suffixFileName + ", writeRead: " + writeRead;
         if (MainActivity.DEBUG) {
             Log.d(TAG, "tryToSave() called with: isChangingConfig = [" + isChangingConfig + "], prefixFileName = [" + prefixFileName + "], suffixFileName = [" + suffixFileName + "], writeRead = [" + writeRead + "]");
@@ -275,7 +275,7 @@ public class StateSaver {
             cc.visitBranch(16, data);
             Log.e(TAG, "Failed to save state", e);
         } finally {
-            cc.visitBranch(TextUtils.isEmpty(suffixFileName) ? 17 : 19, data);
+            cc.visitBranch(fileOutputStream != null ? 17 : 19, data);
             if (fileOutputStream != null) { //17 or 19
                 try {
                     fileOutputStream.close();
