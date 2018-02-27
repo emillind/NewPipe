@@ -47,6 +47,14 @@ public class ListHelperTest {
             new VideoStream("", MediaFormat.MPEG_4,   /**/ "1080p", true),
             new VideoStream("", MediaFormat.MPEG_4,   /**/ "1080p60", true));
 
+    /**
+     * Requirements
+     * - If videoStreams is not null, loop over the streams and add them to retList
+     * - If we do not want higher resolutions and the stream is of high resolution, do not add.
+     * Do the preceding two for videoOnlyStreams as well.
+     * - Loop over videoStreams, if the format of the stream is the same as the desired default format add them to the hashmap
+     * Do the preceding for videoOnlyStreams as well
+     */
     @Test
     public void getSortedStreamVideosListTest() throws Exception {
         String methodName = "getSortedStreamVideosList";
