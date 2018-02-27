@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
+import Assignment4.CodeCoverage;
 @SuppressWarnings("WeakerAccess")
 public final class ListHelper {
 
@@ -118,20 +118,66 @@ public final class ListHelper {
      * @param audioStreams list the audio streams
      * @return index of the audio with the highest average bitrate of the default format
      */
-    public static int getHighestQualityAudioIndex(MediaFormat defaultFormat, List<AudioStream> audioStreams) {
-        if (audioStreams == null || audioStreams.isEmpty() || defaultFormat == null) return -1;
+
+    /*
+     * Requirements:
+     * The index of the audiostream with highest bitrate is to be returned.
+     * If there exist an audiostream with the defaultFormat that should be returned, otherwise the
+     * one with highest bitrate.
+     * If something is wrong, for example there are no audiostreams, then -1 should be returned.
+     */
+    public static int getHighestQualityAudioIndex(MediaFormat defaultFormat, List<AudioStream> audioStreams, CodeCoverage... codeCoverage) {
+        CodeCoverage cc = codeCoverage.length != 0 ? codeCoverage[0] : new CodeCoverage("getHighestQualityAudioIndex");
+        String data = "defaultFormat: " + defaultFormat + ", audioStreams size: " + (audioStreams == null ? "NULL" : audioStreams.size());
+        if (audioStreams == null) cc.visitBranch(0, data); // 0
+        else if (audioStreams.isEmpty()) cc.visitBranch(1, data); // 1
+        else if (defaultFormat == null) cc.visitBranch(2, data); // 2
+
+        if (audioStreams == null || audioStreams.isEmpty() || defaultFormat == null) { // (0||1||2)
+            return -1;
+        }
+        else cc.visitBranch(3, data); // 3
 
         int highestQualityIndex = -1;
-        for (int i = 0; i < audioStreams.size(); i++) {
-            AudioStream audioStream = audioStreams.get(i);
-            if (highestQualityIndex == -1 && audioStream.getFormat() == defaultFormat) highestQualityIndex = i;
 
-            if (highestQualityIndex != -1 && audioStream.getFormat() == defaultFormat
-                    && audioStream.getAverageBitrate() > audioStreams.get(highestQualityIndex).getAverageBitrate()) {
+        cc.visitBranch(4, data); // 4
+        for (int i = 0; i < audioStreams.size(); i++) {
+
+            AudioStream audioStream = audioStreams.get(i);
+
+            if (highestQualityIndex == -1)cc.visitBranch(6, data); // 6
+
+            if (highestQualityIndex == -1 && audioStream.getFormat() == defaultFormat) { // 6 && 7
+                cc.visitBranch(7, data);
                 highestQualityIndex = i;
             }
+            else { //8
+                cc.visitBranch(8, data);
+            }
+
+            if (highestQualityIndex != -1)cc.visitBranch(9, data); // 9
+
+            if (highestQualityIndex != -1 && audioStream.getFormat() == defaultFormat)cc.visitBranch(10, data); // 9 && 10
+
+            if (highestQualityIndex != -1 && audioStream.getFormat() == defaultFormat
+                    && audioStream.getAverageBitrate() > audioStreams.get(highestQualityIndex).getAverageBitrate()) { //(9&&10&&11)
+                cc.visitBranch(11, data);
+                highestQualityIndex = i;
+            }
+            else {
+                cc.visitBranch(12, data);
+            }
+
         }
-        if (highestQualityIndex == -1) highestQualityIndex = getHighestQualityAudioIndex(audioStreams);
+
+        cc.visitBranch(5, data); // 5
+
+        if (highestQualityIndex == -1) { // 13
+            cc.visitBranch(13, data);
+            highestQualityIndex = getHighestQualityAudioIndex(audioStreams);
+        }
+        else cc.visitBranch(14, data); // 14
+
         return highestQualityIndex;
     }
 

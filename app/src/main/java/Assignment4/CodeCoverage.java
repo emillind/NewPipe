@@ -40,8 +40,8 @@ public class CodeCoverage {
                 return 21;
             case "getResultHandler":
                 return 0;
-            case "run":
-                return 0;
+            case "getHighestQualityAudioIndex":
+                return 15;
             case "main":
                 return 0;
             default:
