@@ -10,7 +10,7 @@ public class CodeCoverage {
     private String methodName;
     private String[] data;
 
-    CodeCoverage(String methodName) {
+    public CodeCoverage(String methodName) {
         this.methodName = methodName;
         int branchCount = getBranchCount(methodName);
         this.branches = new boolean[branchCount];
@@ -40,8 +40,8 @@ public class CodeCoverage {
                 return 0;
             case "getResultHandler":
                 return 0;
-            case "run":
-                return 0;
+            case "getHighestQualityAudioIndex":
+                return 15;
             case "main":
                 return 0;
             default:
@@ -67,7 +67,7 @@ public class CodeCoverage {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         StringBuffer unvisited = new StringBuffer();
-        int branchesVisited = 0;
+        double branchesVisited = 0;
         boolean allBranchesVisited = true;
         for (int i = 0; i < data.length; i++) {
             if (branches[i]) {

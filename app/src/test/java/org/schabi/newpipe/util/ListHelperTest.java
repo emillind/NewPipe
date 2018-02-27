@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Assignment4.CodeCoverage;
+
 import static org.junit.Assert.assertEquals;
 
 public class ListHelperTest {
@@ -195,5 +197,28 @@ public class ListHelperTest {
         assertEquals(-1, ListHelper.getHighestQualityAudioIndex(null, new ArrayList<AudioStream>()));
     }
 
+    @Test
+    public void getHighestQualityAudioIndexTest() {
+        List<AudioStream> audioStreamsTestNoDefaultFormat = Arrays.asList(
+                new AudioStream("", MediaFormat.M4A,   /**/ 128),
+                new AudioStream("", MediaFormat.M4A,   /**/ 64));
+
+        String methodName = "getHighestQualityAudioIndex";
+        System.out.println("Calculating branch coverage for " + methodName);
+        CodeCoverage cc = new CodeCoverage(methodName);
+
+        // 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14
+        assertEquals(9, ListHelper.getHighestQualityAudioIndex(MediaFormat.WEBMA, audioStreamsTestList, cc));
+        // 0
+        assertEquals(-1, ListHelper.getHighestQualityAudioIndex(MediaFormat.WEBMA, null, cc));
+        // 1
+        assertEquals(-1, ListHelper.getHighestQualityAudioIndex(MediaFormat.WEBMA, new ArrayList<>(), cc));
+        // 2
+        assertEquals(-1, ListHelper.getHighestQualityAudioIndex(null, audioStreamsTestList, cc));
+        // 13
+        assertEquals(0, ListHelper.getHighestQualityAudioIndex(MediaFormat.WEBMA, audioStreamsTestNoDefaultFormat, cc));
+
+        System.out.println(cc.toString());
+    }
 
 }
