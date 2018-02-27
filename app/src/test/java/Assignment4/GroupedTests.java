@@ -10,12 +10,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.schabi.newpipe.fragments.local.dialog.PlaylistDialog;
-import org.schabi.newpipe.util.AnimationUtils;
 import org.schabi.newpipe.util.StateSaver;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import static org.junit.Assert.*;
 
@@ -51,6 +48,18 @@ public class GroupedTests {
     }
 
     @Test
+    /**
+     * Requirements
+     * - If the configuration is changing and there are saved objects, put those objects in a holder for
+     * the prefix and return a new SavedState with that prefix.
+     * - Otherwise start saving the state to the cache
+     * - If the directory in which the cache directory should be does not exist throw RuntimeException
+     * - If the cache directory does not exist, try to create it. If it cannot be created abort and return.
+     * - If the cache directory was created or already existed check if a file with this exact name exists
+     * - If it does exist and is not empty, return a SavedState pointing to that file
+     * - If it does not, remove all files containing the prefix and write to the new file.
+     * - Should there be any Exception thrown log it
+     */
     public void tryToSaveTest() throws Exception {
         PowerMockito.mockStatic(Log.class);
         PowerMockito.mockStatic(TextUtils.class);
