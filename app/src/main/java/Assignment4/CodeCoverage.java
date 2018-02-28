@@ -79,7 +79,8 @@ public class CodeCoverage {
                 sb.append("Branch " + i + " was not reached.\n");
             }
         }
-        double coverage = branchesVisited/data.length;
+        double coverage = (double)branchesVisited/data.length;
+
         sb.append("==================================\nTotal branch coverage for " + methodName + ": "
                 + 100*coverage + "%\n" + (allBranchesVisited ? "" : "Unreached branches: " + unvisited.toString() + "\n")
                 + "==================================");

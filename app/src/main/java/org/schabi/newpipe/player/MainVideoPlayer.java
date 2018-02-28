@@ -86,7 +86,7 @@ public final class MainVideoPlayer extends Activity {
     private GestureDetector gestureDetector;
 
     private boolean activityPaused;
-    private VideoPlayerImpl playerImpl;
+    public VideoPlayerImpl playerImpl;
 
     private SharedPreferences defaultPreferences;
 
@@ -284,7 +284,7 @@ public final class MainVideoPlayer extends Activity {
     ///////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings({"unused", "WeakerAccess"})
-    private class VideoPlayerImpl extends VideoPlayer {
+    public class VideoPlayerImpl extends VideoPlayer {
         private TextView titleTextView;
         private TextView channelTextView;
         private TextView volumeTextView;
@@ -311,7 +311,7 @@ public final class MainVideoPlayer extends Activity {
 
         private View secondaryControls;
 
-        VideoPlayerImpl(final Context context) {
+        public VideoPlayerImpl(final Context context) {
             super("VideoPlayerImpl" + MainVideoPlayer.TAG, context);
         }
 
@@ -840,12 +840,12 @@ public final class MainVideoPlayer extends Activity {
             return true;
         }
 
-        private final boolean isPlayerGestureEnabled = PlayerHelper.isPlayerGestureEnabled(getApplicationContext());
+        public boolean isPlayerGestureEnabled = true; //PlayerHelper.isPlayerGestureEnabled(getApplicationContext());
 
         private final float stepsBrightness = 15, stepBrightness = (1f / stepsBrightness), minBrightness = .01f;
         private float currentBrightness = .5f;
 
-        private int currentVolume, maxVolume = playerImpl.getAudioReactor().getMaxVolume();
+        private int currentVolume, maxVolume = 100;//playerImpl.getAudioReactor().getMaxVolume();
         private final float stepsVolume = 15, stepVolume = (float) Math.ceil(maxVolume / stepsVolume), minVolume = 0;
 
         private final String brightnessUnicode = new String(Character.toChars(0x2600));
@@ -853,7 +853,11 @@ public final class MainVideoPlayer extends Activity {
 
         private final int MOVEMENT_THRESHOLD = 40;
         private final int eventsThreshold = 8;
-        private boolean triggered = false;
+        public boolean triggered = true;
+        public int currentState = 127;
+        public int getWidth = 500;
+        public int getVolume = 50;
+        public int getVisibility = 0;
         private int eventsNum;
 
         // TODO: Improve video gesture controls
@@ -885,7 +889,7 @@ public final class MainVideoPlayer extends Activity {
             //Else
             cc.visitBranch(3, data);
 
-            if (eventsNum++ % eventsThreshold != 0 || playerImpl.getCurrentState() == BasePlayer.STATE_COMPLETED) {
+            if (eventsNum++ % eventsThreshold != 0 || currentState == BasePlayer.STATE_COMPLETED) {
                 cc.visitBranch(4, data);
                 return false;
             }
@@ -896,10 +900,12 @@ public final class MainVideoPlayer extends Activity {
             boolean up = distanceY > 0;
 
 
-            if (e1.getX() > playerImpl.getRootView().getWidth() / 2) {
+
+            if (e1.getX() > getWidth / 2) {
                 cc.visitBranch(6, data);
                 double floor = Math.floor(up ? stepVolume : -stepVolume);
-                currentVolume = (int) (playerImpl.getAudioReactor().getVolume() + floor);
+                currentVolume = (int) (getVolume + floor);
+                //Log.i("Debug: ", "maxVolume: " + maxVolume + " curr: " + currentVolume);
                 if (currentVolume >= maxVolume) {
                     cc.visitBranch(7, data);
                     currentVolume = maxVolume;
@@ -911,25 +917,25 @@ public final class MainVideoPlayer extends Activity {
                 }else
                     cc.visitBranch(10, data);
 
-                playerImpl.getAudioReactor().setVolume(currentVolume);
+                //playerImpl.getAudioReactor().setVolume(currentVolume);
 
-                currentVolume = playerImpl.getAudioReactor().getVolume();
+                currentVolume = getVolume;
                 if (DEBUG) Log.d(TAG, "onScroll().volumeControl, currentVolume = " + currentVolume);
                 final String volumeText = volumeUnicode + " " + Math.round((((float) currentVolume) / maxVolume) * 100) + "%";
-                playerImpl.getVolumeTextView().setText(volumeText);
+                //playerImpl.getVolumeTextView().setText(volumeText);
 
-                if (playerImpl.getVolumeTextView().getVisibility() != View.VISIBLE) {
+                if (getVisibility != View.VISIBLE) {
                     cc.visitBranch(11, data);
-                    animateView(playerImpl.getVolumeTextView(), true, 200);
+                    //animateView(playerImpl.getVolumeTextView(), true, 200);
                 }else
                     cc.visitBranch(12, data);
-                if (playerImpl.getBrightnessTextView().getVisibility() == View.VISIBLE) {
+                if (getVisibility == View.VISIBLE) {
                     cc.visitBranch(13, data);
-                    playerImpl.getBrightnessTextView().setVisibility(View.GONE);
+                    //playerImpl.getBrightnessTextView().setVisibility(View.GONE);
                 }else
                     cc.visitBranch(14, data);
             } else {
-                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                //WindowManager.LayoutParams lp = getWindow().getAttributes();
                 currentBrightness += up ? stepBrightness : -stepBrightness;
                 if (currentBrightness >= 1f) {
                     cc.visitBranch(15, data);
@@ -942,22 +948,22 @@ public final class MainVideoPlayer extends Activity {
                 }else
                     cc.visitBranch(18, data);
 
-                lp.screenBrightness = currentBrightness;
-                getWindow().setAttributes(lp);
+                //lp.screenBrightness = currentBrightness;
+                //getWindow().setAttributes(lp);
                 if (DEBUG) Log.d(TAG, "onScroll().brightnessControl, currentBrightness = " + currentBrightness);
                 int brightnessNormalized = Math.round(currentBrightness * 100);
 
                 final String brightnessText = brightnessUnicode + " " + (brightnessNormalized == 1 ? 0 : brightnessNormalized) + "%";
-                playerImpl.getBrightnessTextView().setText(brightnessText);
+                //playerImpl.getBrightnessTextView().setText(brightnessText);
 
-                if (playerImpl.getBrightnessTextView().getVisibility() != View.VISIBLE) {
+                if (getVisibility != View.VISIBLE) {
                     cc.visitBranch(19, data);
-                    animateView(playerImpl.getBrightnessTextView(), true, 200);
+                    //animateView(playerImpl.getBrightnessTextView(), true, 200);
                 }else
                     cc.visitBranch(20, data);
-                if (playerImpl.getVolumeTextView().getVisibility() == View.VISIBLE) {
+                if (getVisibility == View.VISIBLE) {
                     cc.visitBranch(21, data);
-                    playerImpl.getVolumeTextView().setVisibility(View.GONE);
+                    //playerImpl.getVolumeTextView().setVisibility(View.GONE);
                 }else
                     cc.visitBranch(22, data);
             }
