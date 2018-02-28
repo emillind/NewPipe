@@ -335,6 +335,16 @@ public class VideoDetailFragment
     // OnClick
     //////////////////////////////////////////////////////////////////////////*/
 
+    /*
+    * Requirements:
+    * onClick is an event handler that takes takes in a view and by the view ID of the part of the screen
+    * that was clicked and determines what should be done next.
+    * Some of the cases expand new fragments that will open up a pop up whilst
+    * others will move you around the screen or expand the views.
+    * Some examples would be to click on background on the screen plays the youtube video in the background.
+    * Clicking Add to expands a fragment to add to playlists.
+    * */
+
     @Override
     public void onClick(View v) {
         if (isLoading.get() || currentInfo == null) return;
