@@ -24,12 +24,12 @@ public class CodeCoverage {
      */
     private int getBranchCount(String methodName) {
         switch (methodName) {
+            case "initSearchListeners":
+                return 13;
+            case "initSuggestionObserver":
+                return 16;
             case "getFileType":
                 return 12;
-            case "initSearchListeners":
-                return 0;
-            case "initSuggestionObserver":
-                return 0;
             case "onPlayQueueChanged":
                 return 25;
             case "onScroll":

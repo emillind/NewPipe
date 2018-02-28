@@ -70,6 +70,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 import static org.schabi.newpipe.util.AnimationUtils.animateView;
+import Assignment4.CodeCoverage;
 
 public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor.NextItemsResult> implements BackPressable {
 
@@ -135,7 +136,6 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
         if (!TextUtils.isEmpty(query)) {
             searchFragment.setSearchOnResume();
         }
-
         return searchFragment;
     }
 
@@ -392,13 +392,25 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
         }
     }
 
-    private void initSearchListeners() {
+    public void initSearchListeners(CodeCoverage... codeCoverage) {
+        CodeCoverage cc;
+        if (codeCoverage.length!=1){
+            cc = new CodeCoverage("initSearchListeners");
+        }else{
+            cc = codeCoverage[0];
+        }
+        
+        String data = "textWatcher: "+textWatcher+"suggestionDisposable: "+suggestionDisposable;
+
+        cc.visitBranch(0, data);
         if (DEBUG) Log.d(TAG, "initSearchListeners() called");
         searchClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (DEBUG) Log.d(TAG, "onClick() called with: v = [" + v + "]");
                 if (TextUtils.isEmpty(searchEditText.getText())) {
+                    //0
+                    cc.visitBranch(0, data);
                     NavigationHelper.gotoMainFragment(getFragmentManager());
                     return;
                 }
@@ -416,6 +428,9 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             public void onClick(View v) {
                 if (DEBUG) Log.d(TAG, "onClick() called with: v = [" + v + "]");
                 if (isSuggestionsEnabled && errorPanelRoot.getVisibility() != View.VISIBLE) {
+                    //1 && 2
+                    cc.visitBranch(1, data);
+                    cc.visitBranch(2, data);
                     showSuggestionsPanel();
                 }
             }
@@ -426,6 +441,9 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             public void onFocusChange(View v, boolean hasFocus) {
                 if (DEBUG) Log.d(TAG, "onFocusChange() called with: v = [" + v + "], hasFocus = [" + hasFocus + "]");
                 if (isSuggestionsEnabled && hasFocus && errorPanelRoot.getVisibility() != View.VISIBLE) {
+                    //2 && 4 && 3
+                    cc.visitBranch(3, data);
+                    cc.visitBranch(4, data);
                     showSuggestionsPanel();
                 }
             }
@@ -447,9 +465,13 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             @Override
             public void onSuggestionItemLongClick(SuggestionItem item) {
                 if (item.fromHistory) showDeleteSuggestionDialog(item);
+                //5
+                cc.visitBranch(5, data);
             }
         });
 
+        //6, 7
+        cc.visitBranch((textWatcher != null ? 6 : 7), data);
         if (textWatcher != null) searchEditText.removeTextChangedListener(textWatcher);
         textWatcher = new TextWatcher() {
             @Override
@@ -473,7 +495,10 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                 if (DEBUG) {
                     Log.d(TAG, "onEditorAction() called with: v = [" + v + "], actionId = [" + actionId + "], event = [" + event + "]");
                 }
+                //8 && 9 || 10
                 if (event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getAction() == EditorInfo.IME_ACTION_SEARCH)) {
+                    cc.visitBranch(((event.getAction() == EditorInfo.IME_ACTION_SEARCH)?10:8), data);
+                    cc.visitBranch(((event.getAction() == EditorInfo.IME_ACTION_SEARCH)?10:9), data);
                     search(searchEditText.getText().toString());
                     return true;
                 }
@@ -481,6 +506,8 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
             }
         });
 
+        //11 || 12
+        cc.visitBranch((suggestionDisposable==null?11:12), data);
         if (suggestionDisposable == null || suggestionDisposable.isDisposed()) initSuggestionObserver();
     }
 
@@ -562,9 +589,24 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
         showKeyboardSearch();
     }
 
-    private void initSuggestionObserver() {
+    public void initSuggestionObserver(CodeCoverage... codeCoverage) {
+        CodeCoverage cc;
+        if (codeCoverage.length!=1){
+            cc = new CodeCoverage("initSuggestionObserver");
+        }else{
+            cc = codeCoverage[0];
+        }
+
+        String data = "suggestionDisposable: "+suggestionDisposable;
+        cc.visitBranch(0, data);
+
         if (DEBUG) Log.d(TAG, "initSuggestionObserver() called");
-        if (suggestionDisposable != null) suggestionDisposable.dispose();
+
+        if (suggestionDisposable != null){
+            //0
+            cc.visitBranch(0, data);
+            suggestionDisposable.dispose();
+        }
 
         final Observable<String> observable = suggestionPublisher
                 .debounce(SUGGESTIONS_DEBOUNCE, TimeUnit.MILLISECONDS)
@@ -578,12 +620,19 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                     final Observable<List<SuggestionItem>> local = flowable.toObservable()
                             .map(searchHistoryEntries -> {
                                 List<SuggestionItem> result = new ArrayList<>();
-                                for (SearchHistoryEntry entry : searchHistoryEntries)
+                                for (SearchHistoryEntry entry : searchHistoryEntries){
+                                    //1
+                                    cc.visitBranch(1, data);
                                     result.add(new SuggestionItem(true, entry.getSearch()));
+                                }
+                                //2
+                                cc.visitBranch(2, data);
                                 return result;
                             });
-
+                    
                     if (query.length() < THRESHOLD_NETWORK_SUGGESTION) {
+                        //3
+                        cc.visitBranch(3, data);
                         // Only pass through if the query length is equal or greater than THRESHOLD_NETWORK_SUGGESTION
                         return local.materialize();
                     }
@@ -594,42 +643,76 @@ public class SearchFragment extends BaseListFragment<SearchResult, ListExtractor
                             .map(strings -> {
                                 List<SuggestionItem> result = new ArrayList<>();
                                 for (String entry : strings) {
+                                    //4
+                                    cc.visitBranch(4, data);
                                     result.add(new SuggestionItem(false, entry));
                                 }
+                                //5
+                                cc.visitBranch(5, data);
                                 return result;
                             });
 
                     return Observable.zip(local, network, (localResult, networkResult) -> {
                         List<SuggestionItem> result = new ArrayList<>();
-                        if (localResult.size() > 0) result.addAll(localResult);
+
+                        
+                        if (localResult.size() > 0) {
+                            //6
+                            cc.visitBranch(6, data);
+                            result.addAll(localResult);
+                        }
 
                         // Remove duplicates
                         final Iterator<SuggestionItem> iterator = networkResult.iterator();
                         while (iterator.hasNext() && localResult.size() > 0) {
+                            //7 && 8
+                            cc.visitBranch(7, data);
+                            cc.visitBranch(8, data);
                             final SuggestionItem next = iterator.next();
                             for (SuggestionItem item : localResult) {
+                                //9
+                                cc.visitBranch(9, data);
                                 if (item.query.equals(next.query)) {
+                                    //10
+                                    cc.visitBranch(10, data);
                                     iterator.remove();
                                     break;
                                 }
                             }
+                            //11
+                            cc.visitBranch(11, data);
                         }
 
-                        if (networkResult.size() > 0) result.addAll(networkResult);
+                        
+                        if (networkResult.size() > 0){
+                            //12
+                            cc.visitBranch(12, data);
+                            result.addAll(networkResult);
+                        } 
                         return result;
                     }).materialize();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(listNotification -> {
+  
+                   
                     if (listNotification.isOnNext()) {
+                        // 13
+                        cc.visitBranch(13, data);
                         handleSuggestions(listNotification.getValue());
+
                     } else if (listNotification.isOnError()) {
+                        //14
+                        cc.visitBranch(14, data);
                         Throwable error = listNotification.getError();
+
                         if (!ExtractorHelper.hasAssignableCauseThrowable(error,
                                 IOException.class, SocketException.class,
                                 InterruptedException.class, InterruptedIOException.class)) {
                             onSuggestionError(error);
+                            //15
+                            cc.visitBranch(15, data);
                         }
                     }
                 });
