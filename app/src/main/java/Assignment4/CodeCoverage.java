@@ -31,19 +31,21 @@ public class CodeCoverage {
             case "initSuggestionObserver":
                 return 0;
             case "onPlayQueueChanged":
-                return 0;
+                return 25;
             case "onScroll":
                 return 0;
             case "animateView":
-                return 0;
+                return 14;
             case "tryToSave":
-                return 0;
+                return 21;
             case "getResultHandler":
                 return 0;
-            case "run":
-                return 0;
+            case "getHighestQualityAudioIndex":
+                return 15;
             case "main":
                 return 0;
+            case "getSortedStreamVideosList":
+                return 20;
             default:
                 return -1;
         }
@@ -67,7 +69,7 @@ public class CodeCoverage {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         StringBuffer unvisited = new StringBuffer();
-        int branchesVisited = 0;
+        double branchesVisited = 0;
         boolean allBranchesVisited = true;
         for (int i = 0; i < data.length; i++) {
             if (branches[i]) {

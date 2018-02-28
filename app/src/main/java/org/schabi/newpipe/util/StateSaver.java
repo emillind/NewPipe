@@ -40,9 +40,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+
+import Assignment4.CodeCoverage;
 
 /**
  * A way to save state to disk or in a in-memory map if it's just changing configurations (i.e. rotating the phone).
@@ -68,6 +71,10 @@ public class StateSaver {
         File externalCacheDir = context.getExternalCacheDir();
         if (externalCacheDir != null) cacheDirPath = externalCacheDir.getAbsolutePath();
         if (TextUtils.isEmpty(cacheDirPath)) cacheDirPath = context.getCacheDir().getAbsolutePath();
+    }
+
+    public static void setCacheDirPath(String cacheDirPath2) {
+        cacheDirPath = cacheDirPath2;
     }
 
     /**
@@ -163,8 +170,9 @@ public class StateSaver {
      * @see #tryToSave(boolean, String, String, WriteRead)
      */
     @Nullable
-    public static SavedState tryToSave(boolean isChangingConfig, @Nullable SavedState savedState, Bundle outState, WriteRead writeRead) {
+    public static SavedState tryToSave(boolean isChangingConfig, @Nullable SavedState savedState, Bundle outState, WriteRead writeRead, CodeCoverage... codeCoverage) {
         @NonNull
+        CodeCoverage cc = codeCoverage.length == 1 ? codeCoverage[0] : new CodeCoverage("tryToSave");
         String currentSavedPrefix;
         if (savedState == null || TextUtils.isEmpty(savedState.getPrefixFileSaved())) {
             // Generate unique prefix
@@ -174,7 +182,7 @@ public class StateSaver {
             currentSavedPrefix = savedState.getPrefixFileSaved();
         }
 
-        savedState = tryToSave(isChangingConfig, currentSavedPrefix, writeRead.generateSuffix(), writeRead);
+        savedState = tryToSave(isChangingConfig, currentSavedPrefix, writeRead.generateSuffix(), writeRead, cc);
         if (savedState != null) {
             outState.putParcelable(StateSaver.KEY_SAVED_STATE, savedState);
             return savedState;
@@ -199,7 +207,8 @@ public class StateSaver {
      * @param writeRead
      */
     @Nullable
-    private static SavedState tryToSave(boolean isChangingConfig, final String prefixFileName, String suffixFileName, WriteRead writeRead) {
+    private static SavedState tryToSave(boolean isChangingConfig, final String prefixFileName, String suffixFileName, WriteRead writeRead, CodeCoverage cc) {
+        String data = "isChangingConfig: " + isChangingConfig + ", prefixFileName: " + prefixFileName + ", suffixFileName: " + suffixFileName + ", writeRead: " + writeRead;
         if (MainActivity.DEBUG) {
             Log.d(TAG, "tryToSave() called with: isChangingConfig = [" + isChangingConfig + "], prefixFileName = [" + prefixFileName + "], suffixFileName = [" + suffixFileName + "], writeRead = [" + writeRead + "]");
         }
@@ -207,11 +216,14 @@ public class StateSaver {
         LinkedList<Object> savedObjects = new LinkedList<>();
         writeRead.writeTo(savedObjects);
 
-        if (isChangingConfig) {
-            if (savedObjects.size() > 0) {
+        cc.visitBranch(isChangingConfig ? 0 : 3, data);
+        if (isChangingConfig) { // 0 or 3
+            if (savedObjects.size() > 0) { // 1
+                cc.visitBranch(1, data);
                 stateObjectsHolder.put(prefixFileName, savedObjects);
                 return new SavedState(prefixFileName, "");
-            } else {
+            } else { // 2
+                cc.visitBranch(2, data);
                 if(MainActivity.DEBUG) Log.d(TAG, "Nothing to save");
                 return null;
             }
@@ -220,23 +232,31 @@ public class StateSaver {
         FileOutputStream fileOutputStream = null;
         try {
             File cacheDir = new File(cacheDirPath);
-            if (!cacheDir.exists()) throw new RuntimeException("Cache dir does not exist > " + cacheDirPath);
+            cc.visitBranch(!cacheDir.exists() ? 4 : 5, data);
+            if (!cacheDir.exists()) throw new RuntimeException("Cache dir does not exist > " + cacheDirPath); //4 or 5
             cacheDir = new File(cacheDir, CACHE_DIR_NAME);
-            if (!cacheDir.exists()) {
-                if(!cacheDir.mkdir()) {
+            cc.visitBranch(!cacheDir.exists() ? 6 : 9, data);
+            if (!cacheDir.exists()) { //6 or 9
+                if(!cacheDir.mkdir()) { //7 or 8
+                    cc.visitBranch(7, data);
                     if(BuildConfig.DEBUG) {
                         Log.e(TAG, "Failed to create cache directory " + cacheDir.getAbsolutePath());
                     }
                     return null;
                 }
+                cc.visitBranch(8, data);
             }
 
-            if (TextUtils.isEmpty(suffixFileName)) suffixFileName = ".cache";
+            cc.visitBranch(TextUtils.isEmpty(suffixFileName) ? 10 : 11, data);
+            if (TextUtils.isEmpty(suffixFileName)) suffixFileName = ".cache"; //10 or 11
             File file = new File(cacheDir, prefixFileName + suffixFileName);
-            if (file.exists() && file.length() > 0) {
+            if (file.exists()) cc.visitBranch(12, data);
+            if (file.exists() && file.length() > 0) { //12 && 13
+                cc.visitBranch(13, data);
                 // If the file already exists, just return it
                 return new SavedState(prefixFileName, file.getAbsolutePath());
-            } else {
+            } else { //14
+                cc.visitBranch(14, data);
                 // Delete any file that contains the prefix
                 File[] files = cacheDir.listFiles(new FilenameFilter() {
                     @Override
@@ -244,9 +264,12 @@ public class StateSaver {
                         return name.contains(prefixFileName);
                     }
                 });
-                for (File fileToDelete : files) {
+                for (File fileToDelete : files) { //15
+                    cc.visitBranch(15, data);
                     fileToDelete.delete();
                 }
+                cc.visitBranch(16,data);
+                //16
             }
 
             fileOutputStream = new FileOutputStream(file);
@@ -254,13 +277,16 @@ public class StateSaver {
             outputStream.writeObject(savedObjects);
 
             return new SavedState(prefixFileName, file.getAbsolutePath());
-        } catch (Exception e) {
+        } catch (Exception e) { //17
+            cc.visitBranch(17, data);
             Log.e(TAG, "Failed to save state", e);
         } finally {
-            if (fileOutputStream != null) {
+            cc.visitBranch(fileOutputStream != null ? 18 : 20, data);
+            if (fileOutputStream != null) { //18 or 20
                 try {
                     fileOutputStream.close();
-                } catch (IOException ignored) {
+                } catch (IOException ignored) { //19
+                    cc.visitBranch(19, data);
                 }
             }
         }
