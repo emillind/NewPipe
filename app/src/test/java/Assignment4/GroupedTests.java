@@ -2,7 +2,7 @@ package Assignment4;
 
 import org.junit.Test;
 
-import us.shandian.giga.CodeCoverage;
+//import Assignment4.CodeCoverage;
 import us.shandian.giga.util.Utility;
 
 import static junit.framework.Assert.assertEquals;
