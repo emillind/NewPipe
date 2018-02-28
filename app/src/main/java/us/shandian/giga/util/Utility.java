@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import us.shandian.giga.CodeCoverage;
+import Assignment4.CodeCoverage;
 
 public class Utility {
 
