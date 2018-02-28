@@ -2,7 +2,7 @@ package Assignment4;
 
 import org.junit.Test;
 
-//import Assignment4.CodeCoverage;
+import Assignment4.CodeCoverage;
 import us.shandian.giga.util.Utility;
 
 import static junit.framework.Assert.assertEquals;
@@ -40,10 +40,7 @@ public class GroupedTests {
         assertEquals(Utility.getFileType("file.flac", cc), Utility.FileType.MUSIC);
         assertEquals(Utility.getFileType("file.m4a", cc), Utility.FileType.MUSIC);
 
-        //4
-        assertEquals(Utility.getFileType("file.bla", cc), Utility.FileType.UNKNOWN);
-        
-        // 5 6 7 8 9 10 11
+        // 4 5 6 7 8 9 10
         assertEquals(Utility.getFileType("file.mp4", cc), Utility.FileType.VIDEO);
         assertEquals(Utility.getFileType("file.mpeg", cc), Utility.FileType.VIDEO);
         assertEquals(Utility.getFileType("file.rm", cc), Utility.FileType.VIDEO);
@@ -52,7 +49,7 @@ public class GroupedTests {
         assertEquals(Utility.getFileType("file.webp", cc), Utility.FileType.VIDEO);
         assertEquals(Utility.getFileType("file.webm", cc), Utility.FileType.VIDEO);
 
-        // 12
+        // 11
         assertEquals(Utility.getFileType("", cc), Utility.FileType.UNKNOWN);
 
         System.out.println("Calculating branch coverage for " + methodName);
