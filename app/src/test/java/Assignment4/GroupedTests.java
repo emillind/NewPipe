@@ -3,6 +3,8 @@ package Assignment4;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.schabi.newpipe.fragments.local.dialog.PlaylistDialog;
+import org.schabi.newpipe.util.AnimationUtils;
 import org.schabi.newpipe.util.StateSaver;
 
 import java.io.File;
@@ -36,13 +39,55 @@ public class GroupedTests {
         //System.out.println(cc.toString());
     }
 
+    /**
+     * Requirements
+     * - If the view is visible and we are entering or exiting view, set it to visible and run executable if any
+     * - If the view is either gone or invisible and we are not entering or exiting view, set it to gone and run executable if any
+     * - Depending on the input animationType, run the desired animation
+     */
     @Test
     public void animateViewTest() throws Exception {
+        PowerMockito.mockStatic(Log.class);
         String methodName = "animateView";
         System.out.println("Calculating branch coverage for " + methodName);
         CodeCoverage cc = new CodeCoverage(methodName);
 
+        AnimationUtils.MockView mockView;
 
+        //Branch 0, 1, 2
+        mockView = new AnimationUtils().new MockView(View.VISIBLE);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.ALPHA, true, 0, 0, () -> {}, cc);
+
+        //Branch 0, 1, 3
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.ALPHA, true, 0, 0, null, cc);
+
+        //Branch 4, 6, 7
+        mockView = new AnimationUtils().new MockView(View.GONE);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.ALPHA, false, 0, 100, () -> {}, cc);
+
+        //Branch 5, 6, 8
+        mockView = new AnimationUtils().new MockView(View.INVISIBLE);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.ALPHA, false, 0, 0, null, cc);
+
+        //Branch 9
+        mockView = new AnimationUtils().new MockView(-1);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.ALPHA, false, 0, 0, null, cc);
+
+        //Branch 10
+        mockView = new AnimationUtils().new MockView(-1);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.SCALE_AND_ALPHA, false, 0, 0, null, cc);
+
+        //Branch 11
+        mockView = new AnimationUtils().new MockView(-1);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.LIGHT_SCALE_AND_ALPHA, false, 0, 0, null, cc);
+
+        //Branch 12
+        mockView = new AnimationUtils().new MockView(-1);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.SLIDE_AND_ALPHA, false, 0, 0, null, cc);
+
+        //Branch 13
+        mockView = new AnimationUtils().new MockView(-1);
+        AnimationUtils.animateView(mockView, AnimationUtils.Type.LIGHT_SLIDE_AND_ALPHA, false, 0, 0, null, cc);
 
         System.out.println(cc.toString());
     }
