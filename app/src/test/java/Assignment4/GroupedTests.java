@@ -39,6 +39,12 @@ public class GroupedTests {
         //System.out.println(cc.toString());
     }
 
+    /**
+     * Requirements
+     * - If the view is visible and we are entering or exiting view, set it to visible and run executable if any
+     * - If the view is either gone or invisible and we are not entering or exiting view, set it to gone and run executable if any
+     * - Depending on the input animationType, run the desired animation
+     */
     @Test
     public void animateViewTest() throws Exception {
         PowerMockito.mockStatic(Log.class);
