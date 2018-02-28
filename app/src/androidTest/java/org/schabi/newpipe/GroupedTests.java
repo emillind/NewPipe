@@ -60,6 +60,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         //Branch 0, 2
         fs = new RouterActivity.FetcherService();
@@ -73,6 +74,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         //Branch 0, 3
         fs = new RouterActivity.FetcherService();
@@ -86,6 +88,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         // Branch 0, 4, 5
         fs = new RouterActivity.FetcherService();
@@ -99,6 +102,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         // Branch 0, 4, 6
         fs = new RouterActivity.FetcherService();
@@ -112,6 +116,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         // Branch 0, 4, 7
         fs = new RouterActivity.FetcherService();
@@ -125,6 +130,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         // Branch 0, 4, 8
         fs = new RouterActivity.FetcherService();
@@ -138,6 +144,7 @@ public class GroupedTests {
             }
         };
         info.accept(in);
+        assertNotNull(info);
 
         // Branch 9, 10
         fs = new RouterActivity.FetcherService();
@@ -146,6 +153,7 @@ public class GroupedTests {
 
         ci = new ChannelInfo(0, "url", "id", "name");
         info.accept(ci);
+        assertNotNull(info);
 
         // Branch 9, 11
         fs = new RouterActivity.FetcherService();
@@ -154,6 +162,7 @@ public class GroupedTests {
 
         ci = new ChannelInfo(0, "url", "id", "name");
         info.accept(ci);
+        assertNotNull(info);
 
         // Branch 9, 12
         fs = new RouterActivity.FetcherService();
@@ -162,6 +171,7 @@ public class GroupedTests {
 
         ci = new ChannelInfo(0, "url", "id", "name");
         info.accept(ci);
+        assertNotNull(info);
 
         // Branch 9, 13
         fs = new RouterActivity.FetcherService();
@@ -170,6 +180,7 @@ public class GroupedTests {
 
         ci = new ChannelInfo(0, "url", "id", "name");
         info.accept(ci);
+        assertNotNull(info);
 
         // Branch 14
         fs = new RouterActivity.FetcherService();
@@ -183,6 +194,7 @@ public class GroupedTests {
             }
         };
         info.accept(i);
+        assertNotNull(info);
 
 
         System.out.println(cc.toString());
