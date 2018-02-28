@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -346,7 +347,7 @@ public class RouterActivity extends AppCompatActivity {
         }
     }
 
-    private static class Choice implements Serializable {
+    public static class Choice implements Serializable {
         final int serviceId;
         final String url, playerChoice;
         final LinkType linkType;
@@ -427,18 +428,26 @@ public class RouterActivity extends AppCompatActivity {
             }
         }
 
+        public String video_player_key = "video_player_key";
+        public String background_player_key = "background_player_key";
+        public String popup_player_key = "popup_player_key";
+        public boolean isExtVideoEnabled = false;
+        public boolean isExtAudioEnabled = false;
+        public boolean useOldVideoPlayer = false;
+
+
         public Consumer<Info> getResultHandler(Choice choice, CodeCoverage... codeCoverage) {
             CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("getResultHandler");
              String data = "Choice: " + choice;
             return info -> {
-                final String videoPlayerKey = getString(R.string.video_player_key);
-                final String backgroundPlayerKey = getString(R.string.background_player_key);
-                final String popupPlayerKey = getString(R.string.popup_player_key);
+                final String videoPlayerKey = video_player_key;
+                final String backgroundPlayerKey = background_player_key;
+                final String popupPlayerKey = popup_player_key;
 
-                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean isExtVideoEnabled = preferences.getBoolean(getString(R.string.use_external_video_player_key), false);
-                boolean isExtAudioEnabled = preferences.getBoolean(getString(R.string.use_external_audio_player_key), false);
-                boolean useOldVideoPlayer = PlayerHelper.isUsingOldPlayer(this);
+                //final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                //boolean isExtVideoEnabled = preferences.getBoolean(getString(R.string.use_external_video_player_key), false);
+                //boolean isExtAudioEnabled = preferences.getBoolean(getString(R.string.use_external_audio_player_key), false);
+                //boolean useOldVideoPlayer = PlayerHelper.isUsingOldPlayer(this);
 
                 PlayQueue playQueue;
                 String playerChoice = choice.playerChoice;
@@ -447,15 +456,15 @@ public class RouterActivity extends AppCompatActivity {
                     cc.visitBranch(0, data);
                     if (playerChoice.equals(backgroundPlayerKey) && isExtAudioEnabled) {
                         cc.visitBranch(1, data);
-                        NavigationHelper.playOnExternalAudioPlayer(this, (StreamInfo) info);
+                        //NavigationHelper.playOnExternalAudioPlayer(this, (StreamInfo) info);
 
                     } else if (playerChoice.equals(videoPlayerKey) && isExtVideoEnabled) {
                         cc.visitBranch(2, data);
-                        NavigationHelper.playOnExternalVideoPlayer(this, (StreamInfo) info);
+                        //NavigationHelper.playOnExternalVideoPlayer(this, (StreamInfo) info);
 
                     } else if (playerChoice.equals(videoPlayerKey) && useOldVideoPlayer) {
                         cc.visitBranch(3, data);
-                        NavigationHelper.playOnOldVideoPlayer(this, (StreamInfo) info);
+                        //NavigationHelper.playOnOldVideoPlayer(this, (StreamInfo) info);
 
                     } else {
                         cc.visitBranch(4, data);
@@ -463,13 +472,13 @@ public class RouterActivity extends AppCompatActivity {
 
                         if (playerChoice.equals(videoPlayerKey)) {
                             cc.visitBranch(5, data);
-                            NavigationHelper.playOnMainPlayer(this, playQueue);
+                            //NavigationHelper.playOnMainPlayer(this, playQueue);
                         } else if (playerChoice.equals(backgroundPlayerKey)) {
                             cc.visitBranch(6, data);
-                            NavigationHelper.enqueueOnBackgroundPlayer(this, playQueue, true);
+                            //NavigationHelper.enqueueOnBackgroundPlayer(this, playQueue, true);
                         } else if (playerChoice.equals(popupPlayerKey)) {
                             cc.visitBranch(7, data);
-                            NavigationHelper.enqueueOnPopupPlayer(this, playQueue, true);
+                            //NavigationHelper.enqueueOnPopupPlayer(this, playQueue, true);
                         }else
                             cc.visitBranch(8, data);
                     }
@@ -477,17 +486,17 @@ public class RouterActivity extends AppCompatActivity {
 
                 if (info instanceof ChannelInfo || info instanceof PlaylistInfo) {
                     cc.visitBranch(9, data);
-                    playQueue = info instanceof ChannelInfo ? new ChannelPlayQueue((ChannelInfo) info) : new PlaylistPlayQueue((PlaylistInfo) info);
+                    //playQueue = info instanceof ChannelInfo ? new ChannelPlayQueue((ChannelInfo) info) : new PlaylistPlayQueue((PlaylistInfo) info);
 
                     if (playerChoice.equals(videoPlayerKey)) {
                         cc.visitBranch(10, data);
-                        NavigationHelper.playOnMainPlayer(this, playQueue);
+                        //NavigationHelper.playOnMainPlayer(this, playQueue);
                     } else if (playerChoice.equals(backgroundPlayerKey)) {
                         cc.visitBranch(11, data);
-                        NavigationHelper.playOnBackgroundPlayer(this, playQueue);
+                        //NavigationHelper.playOnBackgroundPlayer(this, playQueue);
                     } else if (playerChoice.equals(popupPlayerKey)) {
                         cc.visitBranch(12, data);
-                        NavigationHelper.playOnPopupPlayer(this, playQueue);
+                        //NavigationHelper.playOnPopupPlayer(this, playQueue);
                     }else
                         cc.visitBranch(13, data);
                 }else
