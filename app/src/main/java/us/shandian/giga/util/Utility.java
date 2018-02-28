@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import us.shandian.giga.CodeCoverage;
+
 public class Utility {
 
     public enum FileType {
@@ -126,15 +128,43 @@ public class Utility {
         }
     }
 
-    public static FileType getFileType(String file) {
-        if (file.endsWith(".mp3") || file.endsWith(".wav") || file.endsWith(".flac") || file.endsWith(".m4a")) {
-            return FileType.MUSIC;
-        } else if (file.endsWith(".mp4") || file.endsWith(".mpeg") || file.endsWith(".rm") || file.endsWith(".rmvb")
-                || file.endsWith(".flv") || file.endsWith(".webp") || file.endsWith(".webm")) {
-            return FileType.VIDEO;
-        } else {
-            return FileType.UNKNOWN;
-        }
+
+    /*
+    * Requirements:
+    * The type of file is to be set to VIDEO or MUSIC depending on the file ending.
+    * If the file has not got a recognised file ending, the file type is set to UNKNOWN.
+    *
+    * */
+
+    public static FileType getFileType(String file, CodeCoverage... codeCoverage) {
+       CodeCoverage cc = codeCoverage.length != 0 ? codeCoverage[0] : new CodeCoverage("getFileType");
+       String data = "file: " + file;
+
+       if(file.endsWith(".mp3")) cc.visitBranch(0, data); //0
+       else if(file.endsWith(".wav")) cc.visitBranch(1, data); //1
+       else if(file.endsWith(".flac")) cc.visitBranch(2, data); //2
+       else if(file.endsWith(".m4a")) cc.visitBranch(3, data); //3
+
+       if (file.endsWith(".mp3") || file.endsWith(".wav") || file.endsWith(".flac") || file.endsWith(".m4a")) {  // (0||1||2||3)
+           return FileType.MUSIC;
+       }
+       else cc.visitBranch(4, data); //4
+
+       if(file.endsWith(".mp4")) cc.visitBranch(5, data); //5
+       else if(file.endsWith(".mpeg")) cc.visitBranch(6, data); //6
+       else if(file.endsWith(".rm")) cc.visitBranch(7, data); //7
+       else if(file.endsWith(".rmvb")) cc.visitBranch(8, data); //8
+       else if(file.endsWith(".flv")) cc.visitBranch(9, data); //9
+       else if(file.endsWith(".webp")) cc.visitBranch(10, data); //10
+       else if(file.endsWith(".webm")) cc.visitBranch(11, data); //11
+
+       if (file.endsWith(".mp4") || file.endsWith(".mpeg") || file.endsWith(".rm") || file.endsWith(".rmvb")
+                || file.endsWith(".flv") || file.endsWith(".webp") || file.endsWith(".webm")){ // (4||6||7||8||9||10||11)
+           return FileType.VIDEO;
+       }
+       else cc.visitBranch(12, data); //12
+
+       return FileType.UNKNOWN;
     }
 
     @ColorRes
