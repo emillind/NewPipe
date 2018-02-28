@@ -24,8 +24,8 @@ public class CodeCoverage {
      */
     private int getBranchCount(String methodName) {
         switch (methodName) {
-            case "onClick":
-                return 0;
+            case "getFileType":
+                return 12;
             case "initSearchListeners":
                 return 0;
             case "initSuggestionObserver":
