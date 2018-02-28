@@ -39,7 +39,7 @@ public class CodeCoverage {
             case "tryToSave":
                 return 0;
             case "getResultHandler":
-                return 0;
+                return 15;
             case "run":
                 return 0;
             case "main":
@@ -80,7 +80,6 @@ public class CodeCoverage {
             }
         }
         double coverage = (double)branchesVisited/data.length;
-
         sb.append("==================================\nTotal branch coverage for " + methodName + ": "
                 + 100*coverage + "%\n" + (allBranchesVisited ? "" : "Unreached branches: " + unvisited.toString() + "\n")
                 + "==================================");
