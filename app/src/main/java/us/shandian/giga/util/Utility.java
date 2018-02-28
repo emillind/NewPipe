@@ -148,21 +148,20 @@ public class Utility {
        if (file.endsWith(".mp3") || file.endsWith(".wav") || file.endsWith(".flac") || file.endsWith(".m4a")) {  // (0||1||2||3)
            return FileType.MUSIC;
        }
-       else cc.visitBranch(4, data); //4
 
-       if(file.endsWith(".mp4")) cc.visitBranch(5, data); //5
-       else if(file.endsWith(".mpeg")) cc.visitBranch(6, data); //6
-       else if(file.endsWith(".rm")) cc.visitBranch(7, data); //7
-       else if(file.endsWith(".rmvb")) cc.visitBranch(8, data); //8
-       else if(file.endsWith(".flv")) cc.visitBranch(9, data); //9
-       else if(file.endsWith(".webp")) cc.visitBranch(10, data); //10
-       else if(file.endsWith(".webm")) cc.visitBranch(11, data); //11
+       if(file.endsWith(".mp4")) cc.visitBranch(4, data); //4
+       else if(file.endsWith(".mpeg")) cc.visitBranch(5, data); //5
+       else if(file.endsWith(".rm")) cc.visitBranch(6, data); //6
+       else if(file.endsWith(".rmvb")) cc.visitBranch(7, data); //7
+       else if(file.endsWith(".flv")) cc.visitBranch(8, data); //8
+       else if(file.endsWith(".webp")) cc.visitBranch(9, data); //9
+       else if(file.endsWith(".webm")) cc.visitBranch(10, data); //10
 
        if (file.endsWith(".mp4") || file.endsWith(".mpeg") || file.endsWith(".rm") || file.endsWith(".rmvb")
                 || file.endsWith(".flv") || file.endsWith(".webp") || file.endsWith(".webm")){ // (4||6||7||8||9||10||11)
            return FileType.VIDEO;
        }
-       else cc.visitBranch(12, data); //12
+       else cc.visitBranch(11, data); //11
 
        return FileType.UNKNOWN;
     }
