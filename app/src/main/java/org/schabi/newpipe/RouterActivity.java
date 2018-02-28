@@ -435,7 +435,11 @@ public class RouterActivity extends AppCompatActivity {
         public boolean isExtAudioEnabled = false;
         public boolean useOldVideoPlayer = false;
 
-
+        /* Requirements:
+        * Based on playerCoice, which can be video_player_key, background_player_key, or popup_player_key and
+        * the booleans isExtVideoEnabled, isExtAudioEnabled or useOldVideoPlayer, this function will
+        * play or enqueue a stream to the selected playerChoice.
+        */
         public Consumer<Info> getResultHandler(Choice choice, CodeCoverage... codeCoverage) {
             CodeCoverage cc = codeCoverage != null ? codeCoverage[0] : new CodeCoverage("getResultHandler");
              String data = "Choice: " + choice;

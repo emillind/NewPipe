@@ -35,12 +35,6 @@ public class GroupedTests {
         //System.out.println(cc.toString());
     }
 
-
-    /* Requirements:
-     * Based on playerCoice, which can be video_player_key, background_player_key, or popup_player_key and
-     * the booleans isExtVideoEnabled, isExtAudioEnabled or useOldVideoPlayer, this function will
-     * play or enqueue a stream to the selected playerChoice.
-     */
     @Test
     public void getResultHandlerTest() throws Exception {
         String methodName = "getResultHandler";
