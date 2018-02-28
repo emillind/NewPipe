@@ -33,7 +33,7 @@ public class CodeCoverage {
             case "onPlayQueueChanged":
                 return 0;
             case "onScroll":
-                return 24;
+                return 25;
             case "animateView":
                 return 0;
             case "tryToSave":

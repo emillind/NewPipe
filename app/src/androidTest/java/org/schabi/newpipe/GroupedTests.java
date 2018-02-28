@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -80,7 +81,12 @@ public class GroupedTests {
         msgl.currentState = 128;
         assertFalse(msgl.onScroll(e1, e2, 2, 1, cc));
 
-        //Branch 5, 16, 18, 20, 21, 23
+        //Branch 3 & 23
+        msgl = mvp.new MySimpleOnGestureListener();
+        msgl.eventsNum = 1;
+        assertFalse(msgl.onScroll(e1, e2, 2, 1, cc));
+
+        //Branch 5, 16, 18, 20, 21, 24
         msgl = mvp.new MySimpleOnGestureListener();
         assertTrue(msgl.onScroll(e1, e2, 2, 1, cc));
 
@@ -96,7 +102,7 @@ public class GroupedTests {
         assertTrue(msgl.onScroll(e1, e2, 2, 1, cc));
 
 
-        System.out.println(cc.toString());
+        Log.i("Coverage info: " ,cc.toString());
     }
 
 }

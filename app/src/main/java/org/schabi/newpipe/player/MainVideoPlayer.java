@@ -858,8 +858,16 @@ public final class MainVideoPlayer extends Activity {
         public int getWidth = 500;
         public int getVolume = 50;
         public int getVisibility = 0;
-        private int eventsNum;
+        public int eventsNum;
 
+
+         /*
+         * Requirements:
+         * If !isPlayerGestureEnabled, !triggered, currentState == BasePlayer.STATE_COMPLETED, or
+         * eventsNum++ % eventsThreshold != 0, then return false.
+         * If not, depending on the x value of the first MotionEvent, this function will either
+         * control the volume or control the brightness. It will then return true.
+         */
         // TODO: Improve video gesture controls
         // @Override - Kind of had to remove this...
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY, CodeCoverage... codeCoverage) {
@@ -889,10 +897,14 @@ public final class MainVideoPlayer extends Activity {
             //Else
             cc.visitBranch(3, data);
 
-            if (eventsNum++ % eventsThreshold != 0 || currentState == BasePlayer.STATE_COMPLETED) {
+            if (currentState == BasePlayer.STATE_COMPLETED) {
                 cc.visitBranch(4, data);
                 return false;
+            }if(eventsNum++ % eventsThreshold != 0){
+                cc.visitBranch(23, data);
+                return false;
             }
+
             //Else
             cc.visitBranch(5, data);
             isMoving = true;
@@ -935,6 +947,7 @@ public final class MainVideoPlayer extends Activity {
                 }else
                     cc.visitBranch(14, data);
             } else {
+                cc.visitBranch(24, data);
                 //WindowManager.LayoutParams lp = getWindow().getAttributes();
                 currentBrightness += up ? stepBrightness : -stepBrightness;
                 if (currentBrightness >= 1f) {
@@ -967,7 +980,6 @@ public final class MainVideoPlayer extends Activity {
                 }else
                     cc.visitBranch(22, data);
             }
-            cc.visitBranch(23, data);
             return true;
         }
 
